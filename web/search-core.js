@@ -18,9 +18,11 @@ export function search(index, query) {
     if (!terms.every(term => record.normalized.includes(term))) continue;
     let score = terms.reduce((s, t) => s + (record.normalizedTitle.includes(t) ? 30 : 0) + (record.normalizedText.includes(t) ? 5 : 0), 0);
     if (!record.title.startsWith('答案')) score += 1;
-    const offsets = terms.map(t => record.normalizedText.indexOf(t)).filter(p => p >= 0);
+    const excerpt = (record.text.startsWith(record.title) ? record.text.slice(record.title.length).trim() : record.text) || record.text;
+    const normalizedExcerpt = normalize(excerpt);
+    const offsets = terms.map(t => normalizedExcerpt.indexOf(t)).filter(p => p >= 0);
     const start = Math.max(0, (offsets.length ? Math.min(...offsets) : 0) - 45);
-    const snippet = (start ? '…' : '') + record.text.slice(start, start + 165) + (start + 165 < record.text.length ? '…' : '');
+    const snippet = (start ? '…' : '') + excerpt.slice(start, start + 165) + (start + 165 < excerpt.length ? '…' : '');
     matches.push({ week: record.week, weekTitle: record.weekTitle, title: record.title, breadcrumb: record.breadcrumb, href: record.href, snippet, score });
   }
   matches.sort((a, b) => b.score - a.score || a.week.localeCompare(b.week));

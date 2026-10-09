@@ -88,6 +88,8 @@ await check('Search content and matching', async () => {
   assert.equal(new Set(raw.map(r => r.week)).size, 12);
   for (const query of ['感知机', 'SVM', 'svm', 'Hopfield', '隶属度', 'PSO']) assert(search(index, query).total > 0, `query has no results: ${query}`);
   assert.equal(search(index, 'SVM').total, search(index, 'svm').total);
+  const chapterPreview = search(index, '感知机').results.find(r => r.href.endsWith('/weeks/02/#perceptron'));
+  assert(chapterPreview && chapterPreview.snippet !== chapterPreview.title && chapterPreview.snippet.length > 50, 'heading-only chapters need substantive excerpts');
   for (const query of ['Week 03', 'week3', '第3周', '第三周']) assert(search(index, query).results.every(r => r.week === '03') && search(index, query).total > 0, `week recognition: ${query}`);
   assert(search(index, '第十周').results.every(r => r.week === '10'));
   assert(search(index, '第5周 核').results.every(r => r.week === '05'));

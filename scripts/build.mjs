@@ -112,7 +112,18 @@ for (const [i, w] of manifest.weeks.entries()) {
     if (saved) { active = saved.active; trail = saved.trail; }
   }
   indexNode(body);
-  searchIndex.push(...records.map(r => ({ ...r, text: norm(r.text) })).filter(r => r.text));
+  const passages = records.map(r => ({ ...r, text: norm(r.text) }));
+  for (const [position, passage] of passages.entries()) {
+    if (passage.text !== passage.title || !passage.breadcrumb) continue;
+    // A heading directly followed by a subheading has no paragraph of its own.
+    // Use a verbatim excerpt from its first substantive child for its preview.
+    const child = passages.slice(position + 1).find(r => r.breadcrumb.startsWith(passage.breadcrumb + ' › ') && r.text !== r.title && r.text);
+    if (child) {
+      const excerpt = child.text.startsWith(child.title) ? child.text.slice(child.title.length).trim() : child.text;
+      passage.text = `${passage.title} ${excerpt.slice(0, 600)}`;
+    }
+  }
+  searchIndex.push(...passages.filter(r => r.text));
   const toc = `<ol class="site-chapter-list">${headings(doc).map(h => `<li class="site-toc-level-${h.tagName[1]}"><a href="#${esc(attr(h, 'id'))}">${esc(norm(text(h)))}</a></li>`).join('')}</ol>`;
   const adjacent = `<nav class="site-adjacent" aria-label="前后周导航">${i > 0 ? `<a rel="prev" href="${weekHref(manifest.weeks[i - 1])}"><span>← 上一周 · ${manifest.weeks[i - 1].id}</span><strong>${esc(manifest.weeks[i - 1].title)}</strong></a>` : '<span></span>'}${i < 11 ? `<a rel="next" href="${weekHref(manifest.weeks[i + 1])}"><span>下一周 · ${manifest.weeks[i + 1].id} →</span><strong>${esc(manifest.weeks[i + 1].title)}</strong></a>` : `<a href="${base}#curriculum"><span>完成十二周</span><strong>返回课程目录 →</strong></a>`}</nav>`;
   await write(`dist/weeks/${w.id}/index.html`, shell({ title: `第 ${w.id} 周｜${w.title}`, route: `weeks/${w.id}/`, week: w, toc, body: `<div class="lesson-content">${serializeOuter(bookHeader(doc))}${serializeOuter(body)}</div>${adjacent}` }));

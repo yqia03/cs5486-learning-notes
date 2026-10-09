@@ -96,6 +96,10 @@ try {
     await visit(page);
     for (const query of ['感知机', 'SVM', 'Hopfield', '第三周', 'Week 03']) {
       await searchFor(query); assert(await page.locator('#site-search-results a').count() > 0, query);
+      if (query === '感知机') {
+        const chapter = page.locator('#site-search-results a[href$="#perceptron"]');
+        assert((await chapter.locator('p').textContent()).length > 50, 'chapter result needs a substantive excerpt');
+      }
       if (['第三周', 'Week 03'].includes(query)) assert((await page.locator('#site-search-results a').evaluateAll(nodes => nodes.map(n => n.href))).every(h => h.includes('/weeks/03/')));
     }
     await searchFor('不存在的关键词XYZZZZ'); assert.equal(await page.locator('#site-search-results a').count(), 0);
