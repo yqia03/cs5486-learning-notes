@@ -26,3 +26,15 @@ npm run test:browser -- --engine webkit
 本地原件哈希检查可选，其余检查仅需克隆本仓库。浏览器报告、截图和打印样张保存在 output/playwright/；不作为网站资源上传。
 
 GitHub Actions 在部署前使用 Node.js 24 重新构建，并运行内容验证及 Chromium 完整验收。线上验收使用同一脚本的 `--url` 参数，结果另记录于本页。
+
+## 公网验收（2026-10-10）
+
+- 已发布并访问：[CS5486 智能系统学习手册](https://yqia03.github.io/cs5486-learning-notes/)。
+- 对真实 Pages 地址运行完整 Chromium 验收：87 项通过，覆盖首页与十二周的三种宽度、两种主题及全部关键交互；无控制台错误或资源失败。
+- 视觉复核后改进了没有独立正文的父章节搜索摘要：使用子章节的原文摘录，不改教学正文。
+- 最终网站代码提交为 `c51b9da71165fa3f36a6f13ba6bb180d490b51c1`；[最终部署工作流](https://github.com/yqia03/cs5486-learning-notes/actions/runs/37967471708) 的 Node.js 24 构建、内容核对、87 项 Chromium 场景及 Pages 发布均成功。
+- 对最终公网版本再次用 Chromium 和 WebKit 检查：首页 HTTP 200、十二周入口、新版中文搜索摘要、结果小节跳转及深层链接刷新均通过。下载的 search-index.json 和 search-core.js 与最终本地构建 SHA-256 完全一致。
+- 公开仓库文件清单经 GitHub API 核对：无原始 PDF、提示词、node_modules、dist 或 output 测试产物。
+- 外部来源仍有 9 个地址无法由自动请求确认可访问性；保留原链接及说明，没有将访问保护误报为永久失效。
+
+本节仅记录已经完成的验收，不改变站点构建产物。最后的文档提交使用 `[skip ci]`，已部署的网站代码仍为上述经过验证的提交。
