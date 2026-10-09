@@ -1,0 +1,595 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="learning-notes textbook-v1">
+  <title>CS5486 第01周｜智能系统导论与神经网络的统一框架</title>
+  <style>/* learning-notes textbook-v1: shared across courses, chapters, and exports. */
+:root {
+  color-scheme: light;
+  --paper: #f6f5f0;
+  --surface: #ffffff;
+  --ink: #202d35;
+  --muted: #55656d;
+  --accent: #17645b;
+  --accent-soft: #edf5f1;
+  --line: #d8e1de;
+  --example: #f2f5f9;
+  --caution: #895021;
+  --caution-soft: #fff6e9;
+  --radius: 10px;
+  --reading-width: 48rem;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 1.5rem; }
+body { margin: 0; color: var(--ink); background: var(--paper); font: 18px/1.9 var(--font-body); overflow-wrap: anywhere; }
+a { color: var(--accent); text-underline-offset: .22em; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+.skip-link { position: absolute; left: 1rem; top: -5rem; padding: .6rem 1rem; background: var(--surface); z-index: 5; }
+.skip-link:focus { top: .5rem; }
+.book-bar { min-height: 64px; display: flex; align-items: center; gap: .7rem; padding: .75rem max(1.5rem, calc((100vw - 1180px)/2)); border-bottom: 1px solid var(--line); font-size: .84rem; letter-spacing: .025em; }
+.book-mark { flex: 0 0 10px; height: 20px; border: 2px solid var(--accent); border-radius: 2px; }
+.book-label { margin-left: auto; color: var(--muted); white-space: nowrap; }
+.book-layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 48px; max-width: 1180px; margin: 0 auto; padding: 48px 24px 72px; }
+.book-sidebar { position: sticky; top: 24px; align-self: start; max-height: calc(100vh - 48px); overflow: auto; padding: 12px 16px 12px 0; font-size: .83rem; }
+.nav-label, .eyebrow, .section-kicker { color: var(--accent); font-weight: 700; font-size: .76rem; letter-spacing: .12em; }
+.nav-label { margin: 0 0 16px; }
+.toc { list-style: none; padding: 0; margin: 0; }
+.toc li { line-height: 1.6; margin: 0 0 12px; }
+.toc a { display: block; color: var(--ink); text-decoration: none; border-left: 2px solid transparent; padding: 3px 0 3px 12px; }
+.toc a:hover { color: var(--accent); border-left-color: var(--accent); }
+.toc .toc-h3 { font-size: .79rem; padding-left: 12px; }
+.toc .toc-h3 a { color: var(--muted); }
+.sidebar-note { border-top: 1px solid var(--line); margin-top: 28px; padding-top: 20px; color: var(--muted); font-size: .76rem; }
+main { min-width: 0; width: 100%; max-width: var(--reading-width); }
+.book-header { padding-bottom: 36px; margin-bottom: 36px; border-bottom: 2px solid var(--ink); }
+.eyebrow { margin: 0 0 14px; }
+h1, h2, h3, h4 { line-height: 1.4; font-weight: 700; text-wrap: pretty; }
+h1 { margin: 0 0 18px; font-size: clamp(2rem, 3.5vw, 2.8rem); letter-spacing: -.025em; }
+.book-subtitle { color: var(--muted); margin: 0; font-size: 1rem; }
+.book-subtitle:empty { display: none; }
+h2 { margin: 3.3rem 0 1.25rem; padding-top: 1.5rem; border-top: 1px solid var(--line); font-size: 1.65rem; }
+.textbook-body > section:first-child > h2, .textbook-body > h2:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+h3 { margin: 2.4rem 0 1rem; font-size: 1.3rem; }
+h4 { margin: 1.5rem 0 .65rem; font-size: 1.07rem; }
+p { margin: .8rem 0 1.1rem; }
+ul, ol { padding-left: 1.6em; }
+li { margin: .45rem 0; }
+strong { font-weight: 700; }
+.learning-goals { border-left: 3px solid var(--accent); padding: .15rem 0 .15rem 1.2rem; margin: 1.4rem 0 2rem; }
+.importance { display: flex; flex-wrap: wrap; gap: .45rem .8rem; align-items: baseline; margin: -.3rem 0 1.4rem; color: var(--muted); font-size: .82rem; }
+.rating { display: inline-block; padding: .14rem .6rem; border-radius: 5px; background: var(--accent-soft); color: var(--accent); font-size: .78rem; font-weight: 700; white-space: nowrap; }
+.source { color: var(--muted); font-size: .78rem; line-height: 1.65; }
+.lead-question { margin: 1.4rem 0; padding: .9rem 1.2rem; border-left: 3px solid var(--accent); background: var(--accent-soft); font-weight: 600; }
+.callout, .worked-example, .checkpoint { margin: 1.7rem 0; padding: 1.25rem 1.5rem; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); }
+.worked-example { background: var(--example); border-color: #d5dde7; }
+.callout.misconception { background: var(--caution-soft); border-color: #e8d5b9; }
+.callout-title { display: block; margin-bottom: .55rem; color: var(--accent); font-size: .84rem; font-weight: 700; letter-spacing: .04em; }
+.misconception .callout-title { color: var(--caution); }
+.callout > :last-child, .worked-example > :last-child, .checkpoint > :last-child { margin-bottom: 0; }
+.checkpoint { border-top: 3px solid var(--accent); }
+details { margin-top: .8rem; }
+summary { color: var(--accent); cursor: pointer; padding: .3rem 0; font-weight: 600; font-size: .9rem; }
+.answer { margin-top: .8rem; border-top: 1px dashed var(--line); padding-top: .6rem; }
+.math-display { overflow-x: auto; overflow-y: hidden; padding: 1.25rem .75rem; margin: 1.4rem 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.math-display math { display: block; width: max-content; min-width: 100%; font-size: 1.15em; }
+math { font-family: "STIX Two Math", "Cambria Math", "Latin Modern Math", math; }
+figure { margin: 1.8rem 0; padding: 1rem; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+figure img, figure svg { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+figure svg { font-family: var(--font-body); }
+figcaption { margin-top: 1rem; color: var(--muted); font-size: .78rem; line-height: 1.7; }
+.table-wrap { max-width: 100%; overflow-x: auto; margin: 1.4rem 0; }
+table { width: 100%; border-collapse: collapse; font-size: .88rem; line-height: 1.7; }
+caption { text-align: left; font-weight: 600; margin-bottom: .6rem; }
+th, td { text-align: left; vertical-align: top; padding: .7rem .85rem; border-bottom: 1px solid var(--line); }
+th { color: var(--accent); background: var(--accent-soft); }
+blockquote { margin: 1.5rem 0; padding: .1rem 1.2rem; border-left: 3px solid var(--line); color: var(--muted); }
+code, pre { font-family: var(--font-mono); font-size: .86em; }
+code { background: #eaece7; padding: .12em .3em; border-radius: 3px; }
+pre { overflow: auto; background: #eaece7; padding: 1.1rem; border-radius: var(--radius); line-height: 1.65; }
+pre code { padding: 0; background: none; font-size: 1em; }
+.chapter-bridge { color: var(--muted); border-top: 1px solid var(--line); padding-top: 1rem; margin-top: 2rem; }
+.book-footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .75rem; }
+@media (max-width: 980px) {
+  .book-layout { display: block; max-width: 820px; padding-top: 28px; }
+  .book-sidebar { position: static; max-height: none; padding: 0 0 20px; margin-bottom: 24px; border-bottom: 1px solid var(--line); }
+  .toc { columns: 2; column-gap: 24px; }
+  .toc li { break-inside: avoid; }
+  .sidebar-note { display: none; }
+}
+@media (max-width: 560px) {
+  body { font-size: 17px; }
+  .book-bar { padding: 12px 20px; }
+  .book-layout { padding: 24px 20px 48px; }
+  .toc { columns: 1; }
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.4rem; }
+  h3 { font-size: 1.17rem; }
+  .callout, .worked-example, .checkpoint { padding: 1rem; }
+  figure { padding: .65rem; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+@media print {
+  @page { margin: 18mm 16mm; }
+  body { background: white; font-size: 11pt; line-height: 1.7; }
+  .book-bar, .book-sidebar, .skip-link, .book-footer { display: none; }
+  .book-layout { display: block; max-width: none; padding: 0; }
+  main { max-width: none; }
+  h1 { font-size: 25pt; }
+  h2 { font-size: 18pt; break-after: avoid; }
+  h3, h4 { break-after: avoid; }
+  .callout, .worked-example, .checkpoint, figure { break-inside: avoid; }
+  .math-display, .table-wrap, pre { overflow: visible; }
+  pre { white-space: pre-wrap; }
+  a { color: inherit; }
+  .book-header { padding-bottom: 18pt; margin-bottom: 20pt; }
+  details > * { display: block !important; }
+  details::details-content { content-visibility: visible; display: block; }
+}
+
+/* Local readability additions; retain learning-notes textbook-v1 design tokens. */
+var { font-family: "Times New Roman", serif; }
+.diagram-scroll { overflow-x: auto; }
+.scroll-hint { display:none; }
+.diagram-scroll svg { width: 100%; min-width: 620px; }
+.math-display math { line-height: 1.7; }
+@media (max-width: 560px) { .scroll-hint { display:block; margin-top:.5rem; } .book-label { display:none; } .table-wrap table { min-width:510px; } }
+@media print { .diagram-scroll { overflow:visible; } .diagram-scroll svg { min-width:0; } .table-wrap table { min-width:0; } .math-display { break-inside:avoid; } }
+</style>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳至正文</a>
+  <header class="book-bar"><span class="book-mark" aria-hidden="true"></span><span>CS5486 · Intelligent Systems</span><span class="book-label">学习教材</span></header>
+  <div class="book-layout">
+    <aside class="book-sidebar">
+      <nav aria-label="教材目录"><p class="nav-label">阅读目录</p><ol class="toc"><li class="toc-h2"><a href="#start">开始之前：本周要建立什么能力</a></li>
+<li class="toc-h3"><a href="#course-map">Course map（课程地图）：同一个目标，多种解题工具</a></li>
+<li class="toc-h2"><a href="#basics">1 · 必要前置：把一个问题写成可计算的形式</a></li>
+<li class="toc-h3"><a href="#function">Function（函数）与 Mapping（映射）：输入如何变成输出</a></li>
+<li class="toc-h3"><a href="#vectors">Vector（向量）、Feature（特征）与 Training sample（训练样本）</a></li>
+<li class="toc-h3"><a href="#weighted-sum">Weighted sum（加权和）：每个输入贡献多少</a></li>
+<li class="toc-h2"><a href="#intelligence">2 · 从系统到智能行为</a></li>
+<li class="toc-h3"><a href="#system">System（系统）与 Intelligent system（智能系统）</a></li>
+<li class="toc-h3"><a href="#inference">Inference（推理）：Deduction（演绎）与 Induction（归纳）</a></li>
+<li class="toc-h3"><a href="#adapt-create">Learning and adaptation（学习与适应）及 Planning（规划）</a></li>
+<li class="toc-h2"><a href="#approaches">3 · AI、CI 与三种互补的解题方式</a></li>
+<li class="toc-h3"><a href="#ai-ci">Artificial Intelligence（人工智能，AI）与 Computational Intelligence（计算智能，CI）</a></li>
+<li class="toc-h3"><a href="#hard-soft">Hard computing（硬计算）与 Soft computing（软计算）</a></li>
+<li class="toc-h3"><a href="#three-paradigms">NN、Fuzzy Logic 与 Evolutionary Computation：各自改变什么</a></li>
+<li class="toc-h3"><a href="#rules-data-search">Rule-based reasoning（规则推理）、Learning from data（数据学习）与 Search（搜索）</a></li>
+<li class="toc-h2"><a href="#history">4 · 历史与应用：理解问题怎样推动方法发展</a></li>
+<li class="toc-h3"><a href="#milestones">Milestones（里程碑）：提出问题、实现方法与验证效果</a></li>
+<li class="toc-h3"><a href="#applications">Applications（应用）：先问输入与输出，再看算法名称</a></li>
+<li class="toc-h3"><a href="#modern-context">Modern context（现代背景）：能力增长与评价问题并存</a></li>
+<li class="toc-h2"><a href="#ann-architecture">5 · ANN 的结构：有哪些量，谁与谁相连</a></li>
+<li class="toc-h3"><a href="#ann">Artificial neural network（人工神经网络，ANN）</a></li>
+<li class="toc-h3"><a href="#arch">ARCH（结构表述）：把部件与变量列清楚</a></li>
+<li class="toc-h3"><a href="#neuron-diagram">Artificial neuron（人工神经元）结构图：从箭头读出计算</a></li>
+<li class="toc-h3"><a href="#weights">Weights（权重）与 Distributed representation（分布式表示）</a></li>
+<li class="toc-h2"><a href="#rules">6 · RULE：从输入走到输出，再走到参数更新</a></li>
+<li class="toc-h3"><a href="#aggregation">Aggregation rule（聚合规则，G）：形成净输入</a></li>
+<li class="toc-h3"><a href="#activation">Activation rule（激活规则，F）：净输入如何变成节点状态</a></li>
+<li class="toc-h3"><a href="#output">Output rule（输出规则，H）：网络内部状态怎样交给外部</a></li>
+<li class="toc-h3"><a href="#evaluation">Evaluation rule（评价规则，E）：把表现变成可比较的数</a></li>
+<li class="toc-h3"><a href="#learning-rule">Learning rule（学习规则，L）：根据评价改变参数</a></li>
+<li class="toc-h3"><a href="#unified-example">ARCH/RULE（结构与规则）完整对照：现在能复现什么</a></li>
+<li class="toc-h2"><a href="#learning-dynamics">7 · 学习的信息来源与两种时间尺度</a></li>
+<li class="toc-h3"><a href="#supervision">Supervised learning（监督学习）与 Unsupervised learning（无监督学习）</a></li>
+<li class="toc-h3"><a href="#generalization">Generalization（泛化）：对新输入是否仍然有效</a></li>
+<li class="toc-h3"><a href="#discrete-continuous">Discrete-time learning（离散时间学习）与 Continuous-time learning（连续时间学习）</a></li>
+<li class="toc-h3"><a href="#two-timescales">Two-time-scale dynamics（双时间尺度动力学）：状态快，权重慢</a></li>
+<li class="toc-h2"><a href="#categories">8 · 网络分类：每次只问一个维度</a></li>
+<li class="toc-h3"><a href="#deterministic">Deterministic（确定性）与 Stochastic（随机性）：固定条件后响应是否唯一</a></li>
+<li class="toc-h3"><a href="#feedforward">Feedforward（前馈）与 Recurrent（循环）：信号是否沿连接返回</a></li>
+<li class="toc-h3"><a href="#semilinear">Semilinear（半线性）与 Higher-order（高阶）：聚合是否包含输入间的乘积</a></li>
+<li class="toc-h3"><a href="#taxonomy">Taxonomy（分类体系）：输入形式、学习信息与实现并非同一件事</a></li>
+<li class="toc-h2"><a href="#properties">9 · 八项网络性质：能力从哪里来，边界在哪里</a></li>
+<li class="toc-h3"><a href="#nonlinearity">Nonlinearity（非线性）</a></li>
+<li class="toc-h3"><a href="#io-property">Input-output mapping（输入输出映射）</a></li>
+<li class="toc-h3"><a href="#adaptivity-property">Adaptivity（适应性）</a></li>
+<li class="toc-h3"><a href="#context-property">Contextual information（上下文信息）</a></li>
+<li class="toc-h3"><a href="#fault-tolerance">Fault tolerance（容错性）</a></li>
+<li class="toc-h3"><a href="#hardware-property">Hardware implementability（硬件可实现性）</a></li>
+<li class="toc-h3"><a href="#uniformity-property">Uniformity of analysis and design（分析与设计的统一性）</a></li>
+<li class="toc-h3"><a href="#biological-property">Neurobiological analogy and plausibility（神经生物学类比与合理性）</a></li>
+<li class="toc-h2"><a href="#practice">10 · 综合练习与讲解答案</a></li>
+<li class="toc-h3"><a href="#practice-calculate">练习 A · 从数据到评价，完整算一遍</a></li>
+<li class="toc-h3"><a href="#practice-activation">练习 B · 不要把净输入直接当作输出</a></li>
+<li class="toc-h3"><a href="#practice-update">练习 C · 更新量、更新后数值和变化率</a></li>
+<li class="toc-h3"><a href="#practice-structure">练习 D · 检查结构、维度和学习信息</a></li>
+<li class="toc-h3"><a href="#practice-interpret">练习 E · 判断一句话缺少了什么条件</a></li>
+<li class="toc-h3"><a href="#practice-design">练习 F · 用统一框架解释一个稍有变化的系统</a></li>
+<li class="toc-h2"><a href="#sources">来源索引、覆盖范围与资料限制</a></li></ol></nav>
+      <p class="sidebar-note">从问题出发，理解每一步。</p>
+    </aside>
+    <main id="main">
+      <header class="book-header"><p class="eyebrow">理解 · 推理 · 应用</p><h1 id="page-title">CS5486 第01周｜智能系统导论与神经网络的统一框架</h1><p class="book-subtitle">从输入、表示与智能行为，走到 ARCH/RULE、预测、评价与学习。</p></header>
+      <article class="textbook-body"><section>
+<h2 id="start">开始之前：本周要建立什么能力</h2>
+<p>第一次面对人工神经网络，最容易遇到的困难不是计算太难，而是不知道图中的箭头、权重、输出和“学习”究竟各自在做什么。本周把这些词连成一条可以亲手走通的链：<strong>描述问题 → 把观察写成数据 → 建立模型 → 产生预测 → 评价预测 → 调整模型 → 检查新情况</strong>。理解这条链，后续学习具体算法时才知道每一个公式在解决哪一步。</p>
+<div class="learning-goals"><strong>学完后，你应能独立做到：</strong><ul><li>用输入、处理、输出与环境解释一个智能系统，并区分执行规则、从样本学习和搜索方案。</li><li>说明 AI、CI、NN、Fuzzy Logic 与 Evolutionary Computation 的关系，识别历史对照图的适用语境。</li><li>把一个小型分类任务写成向量与加权和，手算一次预测、误差和权重变化。</li><li>解释 ANN = (ARCH, RULE) 中每个符号的对象、维度与作用。</li><li>区分监督与无监督、运行与学习、离散时间与连续时间，以及网络分类的不同维度。</li><li>对“神经网络具有某种性质”补出成立条件，不把能力列表当作性能保证。</li></ul></div>
+<p><strong>范围：</strong>主课件 PDF 实际第 1–45 页，从课程封面至 <em>Properties of Neural Networks</em>。第 46 页的 McCulloch–Pitts Neuron 及其后的逻辑门、感知机训练、BP、SVM 推导不在本周。辅助资料只用于本周的解释与核验。这里的“第 01 周”是本教材的学习分段；课程说明没有给出官方 12 周课表。</p>
+<p class="source">来源定位统一使用<strong>文件名与 PDF 实际页序</strong>，从第一页计数，不按印刷页码。正文标记“原资料框架”“教学补充”“经核实的纠正”，分别说明证据性质。评级依学习依赖与资料主线判断，5/5 为核心基础、4/5 为重要方法、3/5 为理解支撑、2/5 为局部拓展、1/5 为背景补充，均不代表考试概率。</p>
+<h3 id="course-map">Course map（课程地图）：同一个目标，多种解题工具</h3>
+<div class="importance"><span class="rating">重要性：★★★★☆ · 4/5 重要方法</span><span>理由：先知道表示、学习与优化各自解决什么，才能把后续算法放回课程主线。</span></div>
+<p>课程的目标是用智能系统的方法解决建模与计算问题，并能用于科学和工程情境。<strong>Knowledge representation（知识表示）</strong>回答“系统怎样保存有用信息”；<strong>Machine learning（机器学习）</strong>回答“怎样利用经验改善表现”；<strong>Search and optimization（搜索与优化）</strong>回答“多个可行方案中怎样找到更好的一个”。它们可以协同工作，并不是彼此排斥的三门学科。</p>
+<p>先顺着图中央的目标往下读，再看三个方法分支，最后回到评价环节。例如，一个水果分拣系统可以把经验存在权重里，通过训练调整权重，再用搜索安排机械臂的动作顺序。分类正确率与动作速度又是不同的评价目标。</p>
+<figure><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 720" role="img" aria-labelledby="w01-svg1-map-title"><title id="w01-svg1-map-title">课程概念地图：问题、知识表示、学习与优化共同构成智能系统</title><defs><marker id="w01-svg1-map-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#17645b"></path></marker></defs><rect x="100" y="20" width="500" height="75" rx="10" fill="#edf5f1" stroke="#9dbbb3"></rect><text x="350.0" y="50.0" text-anchor="middle" font-size="18" fill="#202d35"><tspan x="350.0" dy="0">Intelligent systems（智能系统）</tspan><tspan x="350.0" dy="27">围绕任务目标组织表示、计算与行动</tspan></text><path d="M350 95 V133" fill="none" stroke="#17645b" stroke-width="2" marker-end="url(#w01-svg1-map-arrow)"></path><rect x="90" y="136" width="520" height="75" rx="10" fill="#edf5f1" stroke="#9dbbb3"></rect><text x="350.0" y="166.0" text-anchor="middle" font-size="18" fill="#202d35"><tspan x="350.0" dy="0">Knowledge representation（知识表示）</tspan><tspan x="350.0" dy="27">规则 · 特征 · 连接参数 · 候选方案</tspan></text><path d="M350 211 V243 H120 V270" fill="none" stroke="#17645b" stroke-width="2" marker-end="url(#w01-svg1-map-arrow)"></path><path d="M350 211 V270" fill="none" stroke="#17645b" stroke-width="2" marker-end="url(#w01-svg1-map-arrow)"></path><path d="M350 243 H580 V270" fill="none" stroke="#17645b" stroke-width="2" marker-end="url(#w01-svg1-map-arrow)"></path><rect x="15" y="273" width="210" height="135" rx="10" fill="#edf5f1" stroke="#9dbbb3"></rect><text x="120.0" y="319.5" text-anchor="middle" font-size="18" fill="#202d35"><tspan x="120.0" dy="0">Rule-based</tspan><tspan x="120.0" dy="27">规则推理</tspan><tspan x="120.0" dy="27">用已有规则得出结论</tspan></text><rect x="245" y="273" width="210" height="135" rx="10" fill="#edf5f1" stroke="#9dbbb3"></rect><text x="350.0" y="319.5" text-anchor="middle" font-size="18" fill="#202d35"><tspan x="350.0" dy="0">Learning</tspan><tspan x="350.0" dy="27">数据学习</tspan><tspan x="350.0" dy="27">用经验改善关系</tspan></text><rect x="475" y="273" width="210" height="135" rx="10" fill="#edf5f1" stroke="#9dbbb3"></rect><text x="580.0" y="319.5" text-anchor="middle" font-size="17" fill="#202d35"><tspan x="580.0" dy="0">Search / optimization</tspan><tspan x="580.0" dy="27">搜索与优化</tspan><tspan x="580.0" dy="27">比较并改善候选</tspan></text><path d="M120 408 V447 H350 V477" fill="none" stroke="#17645b" stroke-width="2" marker-end="url(#w01-svg1-map-arrow)"></path><path d="M350 408 V477" fill="none" stroke="#17645b" stroke-width="2" marker-end="url(#w01-svg1-map-arrow)"></path><path d="M580 408 V447 H350" fill="none" stroke="#17645b" stroke-width="2" marker-end="url(#w01-svg1-map-arrow)"></path><rect x="65" y="480" width="570" height="90" rx="10" fill="#edf5f1" stroke="#9dbbb3"></rect><text x="350.0" y="517.5" text-anchor="middle" font-size="18" fill="#202d35"><tspan x="350.0" dy="0">CI 重点：NN · Fuzzy Logic · EC</tspan><tspan x="350.0" dy="27">学习能力 · 模糊表示 · 进化优化（可以结合）</tspan></text><path d="M350 570 V603" fill="none" stroke="#17645b" stroke-width="2" marker-end="url(#w01-svg1-map-arrow)"></path><rect x="65" y="606" width="570" height="75" rx="10" fill="#edf5f1" stroke="#9dbbb3"></rect><text x="350.0" y="636.0" text-anchor="middle" font-size="18" fill="#202d35"><tspan x="350.0" dy="0">Evaluation（评价）与应用检验</tspan><tspan x="350.0" dy="27">预测是否可靠？行为是否满足任务目标？</tspan></text><text x="350" y="710" text-anchor="middle" font-size="15" fill="#202d35"><tspan x="350" dy="0">教学地图：箭头表示学习组织关系，不是互斥学科树。</tspan></text></svg></div><figcaption>图1 · 教学概念地图。依据主课件实际第2–5、24–30页与课程说明第2页自绘。先理解三个动作，再看CI方法如何参与其中；它们不是一一对应或互斥关系。<span class="scroll-hint">窄屏阅读时，可在图内左右滑动。</span></figcaption></figure>
+<p>课件的大纲还列出 Associative memory（联想记忆）、Generalization（泛化），以及监督、无监督、强化和深度学习。<strong>Reinforcement learning（强化学习）</strong>的最低限度直觉是：依据行动后得到的奖励反馈调整行为；<strong>Deep learning（深度学习）</strong>强调多层表示。前者区分反馈来源，后者描述模型层次，两者并不互斥。本周只保留这些路标，不推导其算法。</p>
+<p>图与树搜索、Simulated annealing（模拟退火）、Neurodynamic optimization（神经动力学优化）、Genetic algorithm（遗传算法）、Particle swarm optimization（粒子群优化）、Ant colony optimization（蚁群优化）、Differential evolution（差分进化）是大纲中的后续工具。现在只需理解：它们都要指定候选方案及“好坏”标准，差别在如何产生和改善候选方案。</p>
+<p>参考书承担不同角色：Rojas 的 <em>Neural Networks: A Systematic Introduction</em> 提供神经网络的系统性入门；Haykin 的 <em>Neural Networks and Learning Machines</em> 连接网络与学习；Russell 与 Norvig 的 <em>Artificial Intelligence: A Modern Approach</em> 提供更广的 AI 地图；Lin 与 Lee 的 <em>Neural Fuzzy Systems</em> 连接神经网络与模糊系统；课程说明还列出 Kruse 等人的 <em>Computational Intelligence: A Methodological Introduction</em>。这里仅将它们作为原资料列出的阅读路标，没有把未提供的整本书当作已读证据。Haykin 的书名在两份课程材料间不一致，见文末资料限制。</p>
+<p class="source">原资料框架：<a href="Lecture_slides_full%20semester.pdf#page=1">Lecture_slides_full semester.pdf，PDF实际第1–6页</a>；<a href="course_files_export/CS5486-2026.pdf#page=1">course_files_export/CS5486-2026.pdf，PDF实际第1–2页</a>。概念地图与阅读解释为教学补充。</p>
+</section>
+<section>
+<h2 id="basics">1 · 必要前置：把一个问题写成可计算的形式</h2>
+<p>本章只用小数的乘加、比较与平方，不要求先学人工智能或微积分。后面所有数值示例都围绕同一任务：观察一枚水果的两个指标，判断是否适合放入“合格”箱。数据和规则均为教学自设，不是实测农业数据。</p>
+<h3 id="function">Function（函数）与 Mapping（映射）：输入如何变成输出</h3>
+<div class="importance"><span class="rating">重要性：★★★★★ · 5/5 核心基础</span><span>理由：网络的聚合、激活、输出与评价规则都要用“输入映射到输出”来理解。</span></div>
+<p><strong>前置补充。</strong>函数可以先理解为一台规定了计算方式的机器：给它一个允许的输入，它按规定产生输出。例如，把输入乘以 2，就是一种函数。写成 <var>f</var>(<var>a</var>) = 2<var>a</var> 时，<var>a</var> 是输入数，<var>f</var> 是规则的名字，<var>f</var>(<var>a</var>) 是算出的结果；输入 0.3，输出就是 0.6。</p>
+<p>分类模型的输入可能不只一个数，输出也未必直接是类别。它可以先给一个分数，再把分数翻译成“合格”或“不合格”。这两步要分开：<strong>分数描述模型的响应，决策规则规定怎样使用这个响应。</strong>确定性函数在输入及所有参数相同的情况下给出同一输出；涉及随机抽样的系统还需要说明随机机制，后文再介绍。</p>
+<div class="math-display"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" aria-label="参数为w的函数把二维输入x映射为实数输出y"><mrow><msub><mi>f</mi><mi mathvariant="bold">w</mi></msub><mo>:</mo><msup><mi>ℝ</mi><mn>2</mn></msup><mo>→</mo><mi>ℝ</mi><mo>,</mo><mi mathvariant="bold">x</mi><mo>↦</mo><mi>y</mi></mrow></math></div>
+<p>这里 <var>x</var> 表示一份输入，<var>w</var> 是控制计算方式的参数，<var>f</var><sub>w</sub> 表示“参数固定为 <var>w</var> 时的函数”，<var>y</var> 是输出。符号 ℝ 表示实数；ℝ<sup>2</sup> 表示两个实数组成的有序数对。本式描述从二维输入到一个实数输出的映射，尚未规定函数的具体形式。参数下标不表示乘法。</p>
+<div class="worked-example"><span class="callout-title">教学示例 · 同一个函数与不同的函数</span><p>同一台秤称不同水果，会得到不同重量；这类似于固定模型、改变输入。调整秤的校准参数后，同一枚水果也可能得到不同读数；这类似于改变模型参数。前者不一定发生学习，后者也只有在依据数据和目标有系统地改善模型时，才构成这里所说的学习。</p></div>
+<p class="source">前置补充，为 <a href="Lecture_slides_full%20semester.pdf#page=34">Lecture_slides_full semester.pdf，PDF实际第34–37页</a> 的映射表述建立直觉；类比不表示神经网络就是称重仪。</p>
+<h3 id="vectors">Vector（向量）、Feature（特征）与 Training sample（训练样本）</h3>
+<div class="importance"><span class="rating">重要性：★★★★★ · 5/5 核心基础</span><span>理由：输入维度、权重维度和监督信号都依赖对“一个样本包含哪些数”的理解。</span></div>
+<p><strong>前置补充与贯穿教学示例。</strong>把可观察的性质变成数值，得到 Feature（特征）。我们规定 <var>x</var><sub>1</sub> 是颜色成熟度指标，<var>x</var><sub>2</sub> 是表面损伤指标；两个指标都已经缩放到 0–1，数越大分别表示越成熟、损伤越重。它们没有物理单位。怎样从照片测出这些值不在本例范围内。</p>
+<div class="math-display"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" aria-label="输入向量x由x1与x2组成，样本A为0.8与0.2，标签为1"><mrow><mi mathvariant="bold">x</mi><mo>=</mo><mrow><mo>(</mo><mtable><mtr><mtd><msub><mi>x</mi><mn>1</mn></msub></mtd></mtr><mtr><mtd><msub><mi>x</mi><mn>2</mn></msub></mtd></mtr></mtable><mo>)</mo></mrow><mo>,</mo><msub><mi mathvariant="bold">x</mi><mi>A</mi></msub><mo>=</mo><mrow><mo>(</mo><mtable><mtr><mtd><mn>.8</mn></mtd></mtr><mtr><mtd><mn>.2</mn></mtd></mtr></mtable><mo>)</mo></mrow><mo>,</mo><msub><mi>d</mi><mn>A</mn></msub><mo>=</mo><mn>1</mn></mrow></math></div>
+<p>向量 <strong>x</strong> 是一列有顺序的数，维度为 2；下标 1、2 指特征位置。A 的输入是 (0.8, 0.2)，不能把顺序交换后仍当成同一含义。符号 <var>d</var> 表示 Desired output（期望输出）或标签：本例用 1 表示合格、0 表示不合格。<var>d</var> 是任务给出的参考答案，<var>y</var> 则是模型算出的数。</p>
+<div class="table-wrap"><table><caption>贯穿全文的四个教学样本</caption><thead><tr><th>样本</th><th><var>x</var><sub>1</sub> 成熟度</th><th><var>x</var><sub>2</sub> 损伤</th><th>标签 <var>d</var></th></tr></thead><tbody><tr><td>A</td><td>0.8</td><td>0.2</td><td>1，合格</td></tr><tr><td>B</td><td>0.2</td><td>0.8</td><td>0，不合格</td></tr><tr><td>C</td><td>0.7</td><td>0.3</td><td>1，合格</td></tr><tr><td>D</td><td>0.3</td><td>0.7</td><td>0，不合格</td></tr></tbody></table></div>
+<p>一个带标签的训练样本是“输入与答案”这一对；训练集则是若干这样的样本。只看到 A 一行时，你知道的是一个具体事例；看到多行后，才可能推断共同关系。本例为便于手算而刻意简化，不能据四行数据断定现实水果质量由这两个指标完全决定，也不能断定某一个特征足以分类。</p>
+<p>维度与样本数是两件事：这里有 4 个样本，每个输入有 2 维。后面用 <var>p</var> 表示样本编号，用 <var>i</var> 表示特征或节点编号，它们不能互换。</p>
+<p class="source">教学补充，对应 <a href="Lecture_slides_full%20semester.pdf#page=32">Lecture_slides_full semester.pdf，PDF实际第32–38页</a>；分类输入与类别的背景见 <a href="course_files_export/ASSPM-Lippmann1987.pdf#page=2">course_files_export/ASSPM-Lippmann1987.pdf，PDF实际第2–3页</a>。</p>
+<h3 id="weighted-sum">Weighted sum（加权和）：每个输入贡献多少</h3>
+<div class="importance"><span class="rating">重要性：★★★★★ · 5/5 核心基础</span><span>理由：它是本周神经元计算与后续网络模型的基本运算。</span></div>
+<p>如果两个特征对判断的作用不同，直接相加就隐藏了这种差别。Weight（权重）为每项输入指定一个乘数：先算它的贡献，再把各项贡献合并。这就是加权和。</p>
+<div class="math-display"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" aria-label="u等于所有对应权重与输入的乘积之和"><mrow><mi>u</mi><mo>=</mo><msub><mi>w</mi><mn>1</mn></msub><msub><mi>x</mi><mn>1</mn></msub><mo>+</mo><mo>⋯</mo><mo>+</mo><msub><mi>w</mi><mi>n</mi></msub><msub><mi>x</mi><mi>n</mi></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mi>w</mi><mi>i</mi></msub><msub><mi>x</mi><mi>i</mi></msub></mrow></math></div>
+<p><var>x</var><sub>i</sub> 是第 <var>i</var> 个输入，<var>w</var><sub>i</sub> 是对应权重；<var>n</var> 是输入数量，Σ 要求把从 <var>i</var> = 1 到 <var>n</var> 的各项加起来。每个乘积是一个数，结果 <var>u</var> 也是一个数。输入有 <var>n</var> 项，就必须有 <var>n</var> 个配对权重。现实中还须保证各项乘积的单位可相加；本例均为无量纲数。</p>
+<div class="worked-example"><span class="callout-title">教学示例 · 从每一项贡献算起</span><p>先随意给模型一组初始权重 (0.6, 0.2)。对 A，成熟度贡献是 0.6 × 0.8 = 0.48；损伤贡献是 0.2 × 0.2 = 0.04；所以净输入 <var>u</var> = 0.48 + 0.04 = 0.52。这个数只是两项证据的合成结果，还需要规定怎样得到输出。</p><p>对 B，两项贡献分别为 0.12、0.16，总和为 0.28。注意初始模型竟然让“损伤越大”增加分数；这正说明初始参数不一定符合任务，学习需要借助数据和评价来修正。</p></div>
+<p>加权和不等于 Weighted average（加权平均）。权重不必都非负，也不必加起来等于 1。若第二个权重为 −0.2，则 A 的第二项贡献变成 −0.04，总和是 0.44。负号表示这一项把净输入往下拉。许多模型还加入 Bias（偏置）作为可调常数，用来整体平移响应；本周贯穿模型不设偏置，避免增加不必要的参数。</p>
+<div class="checkpoint"><strong>理解检查 1</strong><p>保持权重 (0.6, 0.2)，把 A 的损伤指标从 0.2 改为 0.5，净输入增加多少？这能说明损伤有利于水果质量吗？</p><details><summary>查看答案与解释</summary><div class="answer"><p>损伤输入增加 0.3，其贡献增加 0.2 × 0.3 = 0.06；净输入从 0.52 变为 0.58。它说明的是<strong>这个模型的当前响应</strong>，不是水果质量的因果规律。模型可能设错、学错，数据也可能有偏差。</p></div></details></div>
+<p class="source">原资料：<a href="Lecture_slides_full%20semester.pdf#page=35">Lecture_slides_full semester.pdf，PDF实际第35–36页</a>；<a href="course_files_export/ASSPM-Lippmann1987.pdf#page=1">course_files_export/ASSPM-Lippmann1987.pdf，PDF实际第1–2页，Fig. 1</a>。数值、前置解释与偏置说明为教学补充。</p>
+<p class="chapter-bridge">现在你已能读懂“用几个数描述对象，再用参数把它们变成输出”。接下来要问：为什么这样的计算可以成为智能系统的一部分？</p>
+</section>
+<section>
+<h2 id="intelligence">2 · 从系统到智能行为</h2>
+<h3 id="system">System（系统）与 Intelligent system（智能系统）</h3>
+<div class="importance"><span class="rating">重要性：★★★★★ · 5/5 核心基础</span><span>理由：先明确系统的目标与边界，才有办法判断模型的输出是否有用。</span></div>
+<p>System（系统）是相互联系、彼此作用并与环境交互的一组部件，用来完成某种功能或目标。水果分拣中的相机、特征计算程序、分类模型、机械臂和传送带都可以是系统部件。若只研究分类器，输入是两个指标，输出是分数；若研究整条生产线，输入还包括水果的位置，输出则可能是机械臂动作。<strong>系统边界不同，输入输出的定义也随之改变。</strong></p>
+<p>课件对 Intelligent system 的工作定义是：表现出某些智能行为的系统。它强调可观察的能力，例如根据不完整信息判断、从经验中改善表现、适应变化，以及规划或设计。它没有要求系统必须像完整的人脑，也没有要求每一种智能能力同时具备。</p>
+<p>“智能”因此不能只靠外形或名称判断。一台会说话的设备可能只是播放固定录音；一个没有人形外观的分类程序却能从样本学到判别规律。评价时应指出：任务是什么、可用信息是什么、在什么环境下达到怎样的表现。Tutorial 将 AI 视作研究这些理论与方法的领域，将智能系统视作应用方法构建的工作系统；这个“方法与成品”的区分很有用。</p>
+<p class="source">原资料框架：<a href="Lecture_slides_full%20semester.pdf#page=7">Lecture_slides_full semester.pdf，PDF实际第7–8页</a>；<a href="course_files_export/Tutorials/Tutorial%201.pdf#page=2">course_files_export/Tutorials/Tutorial 1.pdf，PDF实际第2–5页</a>。分拣系统边界为教学示例。</p>
+<h3 id="inference">Inference（推理）：Deduction（演绎）与 Induction（归纳）</h3>
+<div class="importance"><span class="rating">重要性：★★★★★ · 5/5 核心基础</span><span>理由：这是分清按规则得到结论与从事例建立规律的关键。</span></div>
+<p>假设已经规定：“成熟度至少 0.6 且损伤不超过 0.4，就放入合格箱。”A 满足两个条件，于是输出合格。这是 Deduction：在给定规则与事实的前提下推出结论。规则如果只是经验近似，那么逻辑执行正确也不保证现实判断正确；演绎保证的是相对于前提的推理关系。</p>
+<p>反过来，如果先给你 A、B、C、D 的观察和标签，再让你寻找“怎样的输入通常合格”，你正在做 Induction。归纳由有限事例形成更一般的关系，能够用于未见过的对象，但结论具有不确定性。仅用四个样本，可能有很多不同的规则都解释得通；符合旧样本不等于已经发现唯一的真实规律。</p>
+<div class="worked-example"><span class="callout-title">教学示例 · 同一份数据中的两种方向</span><p><strong>演绎方向：</strong>规则已给定 → 读取 C 的 0.7 与 0.3 → 检查 0.7 ≥ 0.6、0.3 ≤ 0.4 → 两个条件成立 → 判合格。</p><p><strong>归纳方向：</strong>观察 A、C 合格，B、D 不合格 → 提出“成熟度较高通常合格”的候选关系 → 用其他样本检验。若新水果成熟度 0.9、损伤 0.9，单看成熟度的规则可能失败。这个反例提醒我们检查遗漏特征和训练样本的代表性。</p></div>
+<p>机器学习文献中的 Inference 还常指用已训练模型进行预测。它不必是形式逻辑中的演绎证明。后文说“运行/预测”时，指固定参数计算输出；说“归纳”时，指从有限经验获得可推广关系。</p>
+<p class="source">原资料：<a href="Lecture_slides_full%20semester.pdf#page=9">Lecture_slides_full semester.pdf，PDF实际第9页</a>。规则、反例与 inference 用语区分为教学补充。</p>
+<h3 id="adapt-create">Learning and adaptation（学习与适应）及 Planning（规划）</h3>
+<div class="importance"><span class="rating">重要性：★★★★☆ · 4/5 重要方法</span><span>理由：智能行为包含改善判断和选择行动，不能把所有能力都缩成一次分类。</span></div>
+<p>学习改变的是系统今后处理问题的方式。假如新一批水果在灯光下颜色偏暗，分类器持续出现偏差，系统可能利用新标注样本调整参数。这是学习；若调整帮助它在变化后的环境中维持表现，就体现适应。环境变化本身不会自动带来进步，系统必须得到适当反馈，并采用有效的调整规则。</p>
+<p>规划则关注“为了达到目标，应按什么顺序采取行动”。分类器回答哪枚水果合格，规划模块回答机械臂先取哪枚、走哪条路径、怎样避免碰撞。课件把规划与设计列在 Creativity（创造性）的例子中：系统可以组合已有部件或行动，产生新的候选方案。但产生新方案并不等于理解了所有相关现实约束，仍要评价可行性与效果。</p>
+<p>这也说明智能系统不必只用一种方法：规则处理明确约束，学习模型辨认对象，搜索选择行动顺序。下一章会把这三种工作放入 AI 与 CI 的课程地图。</p>
+<p class="source">原资料：<a href="Lecture_slides_full%20semester.pdf#page=9">Lecture_slides_full semester.pdf，PDF实际第9页</a>；学习定义见 <a href="Lecture_slides_full%20semester.pdf#page=38">Lecture_slides_full semester.pdf，PDF实际第38页</a>。具体情境为教学补充。</p>
+</section>
+<section>
+<h2 id="approaches">3 · AI、CI 与三种互补的解题方式</h2>
+<h3 id="ai-ci">Artificial Intelligence（人工智能，AI）与 Computational Intelligence（计算智能，CI）</h3>
+<div class="importance"><span class="rating">重要性：★★★★☆ · 4/5 重要方法</span><span>理由：理解课程用语的历史与当前含义，可避免把方法之间的关系画错。</span></div>
+<p>AI 研究如何使机器表现出智能能力，包括推理、学习、感知、规划等。CI 在本课程中重点指 Neural networks（神经网络，NN）、Fuzzy Logic（模糊逻辑，FL）与 Evolutionary Computation（进化计算，EC）等方法。它们特别重视从数据或交互中适应、处理不精确信息、以搜索寻找较好解。</p>
+<p>课件第 25 页用交叠圆说明多种方法可以组成智能系统；第 26–28 页则用强烈对照突出适应性。这两种图各有教学意图，却不能拼成“AI 与 CI 是两个永不相交的集合”。在广义 AI 用法中，神经网络与数据学习也是 AI 的组成部分。理解旧课件时，可把其中与 CI 对照的 AI 读成对某些<strong>传统符号或显式规则方法</strong>的强调，而不是把所有 AI 都排除在学习之外。</p>
+<div class="callout misconception"><span class="callout-title">历史语境与证据边界</span><p>第 26 页署名 Folger 的段落批评缺少适应能力的程序，第 28 页把 soft computing 作为设计方向加以倡导。两页均缺少可追溯的完整原始引文信息；本教材保留“重视适应”的讨论，不把其绝对判断或逐字引语当作已核实定律。第 24 页称 CI 一词由某机构在 1994 年创造，也不能仅据这页确认术语首创权。</p></div>
+<p>Tutorial 的 Narrow AI（狭义人工智能）指面向限定任务的能力；Artificial General Intelligence（通用人工智能，AGI）讨论跨领域的广泛能力；Superintelligence（超级智能）是超越人类能力的假设性概念。这是能力范围的区分，不能用某一次下棋胜利或模型名称直接判定后两者已经实现。本周不作产品能力排行榜。</p>
+<p class="source">原资料与语境澄清：<a href="Lecture_slides_full%20semester.pdf#page=24">Lecture_slides_full semester.pdf，PDF实际第24–28页</a>；<a href="course_files_export/Tutorials/Tutorial%201.pdf#page=4">course_files_export/Tutorials/Tutorial 1.pdf，PDF实际第4–5页</a>。外部核对：<a href="https://resourcecenter.cis.ieee.org/cis-computational-intelligence">IEEE CIS 对神经网络、模糊系统、进化算法与混合系统的领域说明</a>。</p>
+<h3 id="hard-soft">Hard computing（硬计算）与 Soft computing（软计算）</h3>
+<div class="importance"><span class="rating">重要性：★★★☆☆ · 3/5 理解支撑</span><span>理由：这个对照帮助理解为何要容纳不确定性，但不是算法正确与否的分界。</span></div>
+<p>Hard computing 在这些课件中的典型形象是：模型明确、条件精确、逻辑判断清晰，例如依据确定规则核算件数。Soft computing 强调容忍不精确性和不确定性，在资源有限或模型难以完全写明时，寻求足够好的解。例如，照片中的“成熟”没有一道天然完美的数值边界，观察又有噪声，系统需要处理渐变和误差。</p>
+<p>“软”不是随意，“硬”也不等于必须穷举。模糊系统和神经网络仍然可以有严格定义的公式；优化和概率计算也可服务于软计算。第 29 页一边列 probability theory（概率论），另一边列 probabilistic reasoning（概率推理），正好提醒我们：这张表是在对照方法取向，不能据此给数学工具划定永久边界。</p>
+<div class="worked-example"><span class="callout-title">教学示例 · 同一个边界的两种表达</span><p>若采用“成熟度达到 0.6 就算成熟”的明确规则，0.599 与 0.601 会落在不同侧；这可能符合某个规范，但会放大临界处的测量扰动。若用“属于成熟这一描述的程度”随指标逐渐变化，就可以表达边界的渐变。不过，只要最终机械臂必须在两个箱子中选一个，系统仍需要明确的决策步骤。软的内部表示与硬的最终动作可以并存。</p></div>
+<p class="source">原资料框架：<a href="Lecture_slides_full%20semester.pdf#page=27">Lecture_slides_full semester.pdf，PDF实际第27–29页</a>；边界示例与术语限制为教学补充。</p>
+<h3 id="three-paradigms">NN、Fuzzy Logic 与 Evolutionary Computation：各自改变什么</h3>
+<div class="importance"><span class="rating">重要性：★★★★★ · 5/5 核心基础</span><span>理由：三种方法的职责和组合方式构成课程核心地图。</span></div>
+<h4 id="neural-method">Neural networks（神经网络）</h4>
+<div class="importance"><span class="rating">重要性：★★★★★ · 5/5 核心基础</span><span>理由：后半周将用 ARCH/RULE 把这种表示与学习方式拆开计算。</span></div>
+<p>Neural networks（神经网络）把大量局部计算连接起来，以连接权重等参数表示输入与输出之间的关系。训练时改变参数，模型对同类输入的响应也随之改变。水果例子中，它可以学习成熟度和损伤怎样共同影响合格判断；下一章会把这个过程拆开。</p>
+<h4 id="fuzzy-method">Fuzzy Logic（模糊逻辑）</h4>
+<div class="importance"><span class="rating">重要性：★★★★☆ · 4/5 重要方法</span><span>理由：隶属度与概率的区别，是读懂软计算和混合系统的关键。</span></div>
+<p>Fuzzy Logic（模糊逻辑）允许“成熟”“损伤较重”等概念以程度表示，而不只取完全是或完全不是。Membership degree（隶属度）为一个对象属于某个模糊集合指定 0–1 的程度。例如，“这枚水果对‘成熟’的隶属度为 0.7”描述符合该概念的程度，<strong>不自动等于“它有 70% 的概率合格”</strong>。隶属函数如何规定，需要任务语义或数据依据；本周不计算完整模糊推理链。</p>
+<h4 id="evolution-method">Evolutionary Computation（进化计算）</h4>
+<div class="importance"><span class="rating">重要性：★★★★☆ · 4/5 重要方法</span><span>理由：理解候选、评价与改进，才能区分进化搜索和单次预测。</span></div>
+<p>Evolutionary Computation（进化计算）把若干候选方案作为一个群体，对其表现进行评价，选择较好的方案，并通过变异、重组等操作产生下一批候选。Genetic algorithm 是其中一类。水果例子中，一个候选可是一组权重，也可以是传送带与机械臂的调度方案。Fitness（适应度）是候选方案的评价值；搜索的结果由表示方式、评价标准和搜索过程共同决定，并不天然保证全局最优。</p>
+<div class="table-wrap"><table><caption>课件第 30 页交叠图的读法</caption><thead><tr><th>组合</th><th>组合在做什么</th><th>水果任务中的教学解释</th></tr></thead><tbody><tr><td>NN + FL</td><td>学习能力与模糊知识表示结合</td><td>用数据调整“较成熟”的描述或相关参数。</td></tr><tr><td>NN + EC</td><td>为网络参数或结构搜索候选</td><td>比较多组权重，保留评价较好的组合。</td></tr><tr><td>FL + EC</td><td>优化模糊系统</td><td>搜索隶属函数参数，使判断符合样本。</td></tr><tr><td>NN + FL + EC</td><td>学习、表示与优化共同参与</td><td>让可解释的模糊描述、学习参数与搜索过程协作。</td></tr></tbody></table></div>
+<p>交叠表示“可以组合”，不表示每个系统都必须同时包含三者。组合也会增加设计与评价的负担，是否有必要要看任务。</p>
+<p class="source">原资料：<a href="Lecture_slides_full%20semester.pdf#page=24">Lecture_slides_full semester.pdf，PDF实际第24–25、30页</a>。外部定义核对：<a href="https://doi.org/10.1016/S0019-9958(65)90241-X">Zadeh, Fuzzy sets（1965）</a>；实例为教学补充。</p>
+<h3 id="rules-data-search">Rule-based reasoning（规则推理）、Learning from data（数据学习）与 Search（搜索）</h3>
+<div class="importance"><span class="rating">重要性：★★★★★ · 5/5 核心基础</span><span>理由：这三个动作可以出现在同一系统中，分清它们才能解释“系统如何工作”。</span></div>
+<p>规则驱动首先要有可执行的知识，例如“若损伤超过某界限，则不合格”。在 Expert system（专家系统）中，Knowledge base（知识库）保存规则或事实，Inference engine（推理引擎）利用它们推出结论。数据学习则不要求人把每一种情况的判别规则逐条写好，而是指定模型、数据和目标，让参数适应样本。搜索关心候选空间：试哪些方案、按什么标准比较、什么时候停止。</p>
+<div class="table-wrap"><table><thead><tr><th>活动</th><th>事先给什么</th><th>执行后得到什么</th></tr></thead><tbody><tr><td>执行规则</td><td>成熟度/损伤的明确判定规则和一个输入</td><td>这枚水果的判断；规则可保持不变。</td></tr><tr><td>从数据学习</td><td>样本、标签、模型和评价标准</td><td>一组改善样本表现的参数。</td></tr><tr><td>搜索优化</td><td>候选参数或动作、约束和评价标准</td><td>在已探索候选中更好的方案。</td></tr></tbody></table></div>
+<p>学习经常可以表述成优化：在参数空间中寻找评价更好的模型。因此“学习”和“搜索”会重叠。区别在于关注点：学习问经验怎样改善行为，搜索问如何探索候选。搜索也可以完全没有训练样本，例如在已知地图上寻找较短路线。</p>
+<div class="checkpoint"><strong>理解检查 2</strong><p>一个程序遍历十组分拣权重，用带标签的样本比较误差，再保留误差最小者。它是在学习还是搜索？</p><details><summary>查看答案与解释</summary><div class="answer"><p>两者都是：它用样本改善模型，是数据学习；它枚举候选权重，是一种有限搜索。它只保证所试十组中的最小误差，不保证所有可能权重中最优，更不保证未来样本上的表现最好。</p></div></details></div>
+<p class="source">原资料框架：<a href="Lecture_slides_full%20semester.pdf#page=3">Lecture_slides_full semester.pdf，PDF实际第3–5、9、30、38页</a>；专家系统结构见 <a href="course_files_export/Tutorials/Tutorial%201.pdf#page=15">course_files_export/Tutorials/Tutorial 1.pdf，PDF实际第15–16页</a>。职责区分与示例为教学补充。</p>
+<p class="chapter-bridge">这些方法并不是一次性出现的。回看发展历史的意义，是理解为什么研究者不断改变表示方式、学习方法和计算条件，而不是记住一串人物肖像。</p>
+</section>
+<section>
+<h2 id="history">4 · 历史与应用：理解问题怎样推动方法发展</h2>
+<h3 id="milestones">Milestones（里程碑）：提出问题、实现方法与验证效果</h3>
+<div class="importance"><span class="rating">重要性：★★☆☆☆ · 2/5 局部拓展</span><span>理由：历史帮助理解不同研究路线，但不应挤占对网络计算与学习机制的掌握。</span></div>
+<p>课件与 Tutorial 的时间线应合并阅读：某种方法有早期思想、论文发表、工程应用和再次流行等不同节点，不能把“在某年代受到重视”直接写成“该年代首次发明”。下面选择与课程地图直接有关的线索；算法细节留到后续学习。</p>
+<div class="table-wrap"><table><thead><tr><th>时间与人物</th><th>本周应理解的意义</th></tr></thead><tbody>
+<tr><td>1943 · Warren S. McCulloch、Walter Pitts</td><td>以简化数学单元研究神经活动与逻辑计算的联系。它开启了“用可计算模型抽象神经元”的路线；本周不展开逻辑门。</td></tr>
+<tr><td>1940 年代 · Norbert Wiener 的 Cybernetics（控制论）路线</td><td>关注系统、通信、反馈与控制，为理解机器和环境的交互提供背景。反馈意味着结果能够影响后续行为。</td></tr>
+<tr><td>1950 · Alan M. Turing</td><td>通过 Imitation game（模仿游戏）把“机器是否思考”的问题转成可讨论的行为观察问题。交互表现是一种观察视角，不等于证明机器有完整人类心智。</td></tr>
+<tr><td>1955 年提案、1956 年 Dartmouth 夏季研究</td><td>McCarthy、Minsky、Rochester 与 Shannon 的提案已使用 Artificial Intelligence 一词。须区分提案年份和活动年份。</td></tr>
+<tr><td>1950–1960 年代 · Frank Rosenblatt；Bernard Widrow 等</td><td>Perceptron（感知机）和 Adaline（自适应线性单元）推动从样本调整连接参数的研究。有限模型的能力边界促进了更复杂结构与学习方法的发展。</td></tr>
+<tr><td>1965 起 · Lotfi A. Zadeh</td><td><em>Fuzzy sets</em> 论文发表于 1965 年；1970 年代还发展了语言变量与近似推理。课件“1970 年代的模糊逻辑”不应被读成模糊集合到那时才出现。</td></tr>
+<tr><td>1970–1980 年代 · 多条路线并行</td><td>专家系统强调显式知识；Stephen Grossberg 的 Adaptive resonance theory（自适应共振理论）研究持续学习中的适应与稳定；John H. Holland 的进化方法强调候选群体的适应。它们关注的问题不同，不能排成单一路线互相替代。</td></tr>
+<tr><td>1982 · Teuvo Kohonen；John J. Hopfield</td><td>Kohonen 的经典特征映射论文发表于 1982 年，强调自组织；Hopfield 的工作让联想记忆与网络整体动力学受到重视。这里只理解“组织相似输入”与“由线索恢复模式”的用途。</td></tr>
+<tr><td>1980 年代 · Scott Kirkpatrick 等的模拟退火工作</td><td>将受物理过程启发的搜索用于优化。课程后来会讨论如何从一个候选移动到另一个候选。</td></tr>
+<tr><td>1974 与 1986 · 学习方法的发展链</td><td>Werbos 的 1974 年博士论文是相关早期工作；1986 年的 <em>Learning representations by back-propagating errors</em> 作者为 David E. Rumelhart、Geoffrey E. Hinton、Ronald J. Williams。不能把 BP 的整个起源归为 Hinton 一人在 1986 年首次提出。</td></tr>
+<tr><td>1997 与 2016 · Deep Blue、AlphaGo</td><td>IBM Deep Blue 在 1997 年比赛中战胜 Garry Kasparov；AlphaGo 在 2016 年以 4–1 战胜 Lee Sedol。它们说明限定任务可以达到很高水平，也展示搜索、评价与学习的不同组合，不构成通用智能的充分证据。</td></tr>
+<tr><td>2006、2012、2017 · 多层学习进一步发展</td><td>Hinton、Osindero、Teh 的 Deep belief nets（深度信念网络）工作是 2006 年的重要节点；Krizhevsky、Sutskever、Hinton 的 AlexNet 在 2012 年展示大规模视觉学习的效果；Vaswani 等人的 Transformer 论文发表于 2017 年。它们是发展节点，不能把 2006 年称为所有深层网络的唯一开始。</td></tr>
+<tr><td>2024 · John J. Hopfield、Geoffrey E. Hinton</td><td>两人共同获得诺贝尔物理学奖，以表彰使人工神经网络机器学习成为可能的基础性发现与发明。这是对研究贡献的表彰，不是某个模型永不出错的认证。</td></tr>
+</tbody></table></div>
+<p><strong>经核实的纠正。</strong>主课件第 16、28 页的人名应为 <strong>Lotfi</strong> A. Zadeh，第 20 页应为 <strong>Geoffrey</strong> E. Hinton。Kohonen 的经典自组织映射论文用 1982 年定位，比课件第 11 页笼统写在 1970 年代更准确。Holland 的工作也不能简单归为“1980 年代才开始”；此处不据简化年代列表断言首创年份。</p>
+<p>Tutorial 把研究热潮与低谷称为 AI boom（人工智能热潮）和 AI winter（人工智能寒冬）。其有用解释是：能力承诺、实际可扩展性、计算资源、知识获取成本和投入回报可能不匹配。1969 年 Minsky 与 Papert 对特定感知机模型的分析，以及 1973 年 Lighthill 的批评，是材料提到的讨论节点；<strong>不能据这张时间线证明一次低谷仅由一本书或一份报告造成</strong>，更不能把有限模型的局限扩大为所有神经网络都无效。专家系统的知识获取与维护困难，则说明把专家经验转换成大量显式规则有成本。</p>
+<p class="source">原资料：<a href="Lecture_slides_full%20semester.pdf#page=10">Lecture_slides_full semester.pdf，PDF实际第10–20页</a>；<a href="course_files_export/Tutorials/Tutorial%201.pdf#page=6">course_files_export/Tutorials/Tutorial 1.pdf，PDF实际第6–29、33–34页</a>。核验：<a href="https://academic.oup.com/mind/article/LIX/236/433/986238">Turing（1950）</a>；<a href="https://www-formal.stanford.edu/jmc/history/dartmouth/dartmouth.html">Dartmouth 原始提案（1955）</a>；<a href="https://www2.eecs.berkeley.edu/Faculty/Homepages/zadeh.html">Berkeley 的 Zadeh 姓名与研究记录</a>；<a href="https://link.springer.com/article/10.1007/BF00337288">Kohonen（1982）</a>；<a href="https://www.werbos.com/AD2004.pdf">Werbos 对早期工作的作者回顾</a>；<a href="https://www.nature.com/articles/323533a0">Rumelhart、Hinton、Williams（1986）</a>，亦与本地 <a href="course_files_export/Nature1986.pdf#page=1">Nature1986.pdf，实际第 1 页文章题头</a> 对照；<a href="https://www.ibm.com/history/deep-blue">IBM 的 Deep Blue 记录</a>；<a href="https://deepmind.google/research/alphago/">DeepMind 的 AlphaGo 记录</a>；<a href="https://direct.mit.edu/neco/article/18/7/1527/7065/A-Fast-Learning-Algorithm-for-Deep-Belief-Nets">2006 年论文</a>；<a href="https://papers.nips.cc/paper/4824-imagenet-classification-withdeep-convolutional-neural-networks.pdf">AlexNet 原论文</a>；<a href="https://arxiv.org/abs/1706.03762">Transformer 原论文</a>；<a href="https://www.nobelprize.org/prizes/physics/2024/press-release/">2024 年诺奖公告</a>。</p>
+<div class="callout"><span class="callout-title">数字要连同评价口径一起读</span><p>Tutorial 第 27 页的“错误率减少约 10%”不够精确。AlexNet 原论文给出的 ILSVRC-2012 <strong>top-5 测试错误率</strong>为 15.3%，第二名为 26.2%；相差 10.9 个百分点。Top-5 指正确类别没有进入模型给出的前五个候选即算错。“百分点之差”与“相对减少百分比”不同。这一例子只用于训练阅读证据的习惯，不展开 CNN 结构。</p></div>
+<h3 id="applications">Applications（应用）：先问输入与输出，再看算法名称</h3>
+<div class="importance"><span class="rating">重要性：★★★★☆ · 4/5 重要方法</span><span>理由：能把应用转成明确任务，是选择和评价智能方法的前提。</span></div>
+<h4 id="pattern-task">Pattern recognition（模式识别）</h4>
+<div class="importance"><span class="rating">重要性：★★★★☆ · 4/5 重要方法</span><span>理由：本教材的贯穿任务就是分类，须先确定输入和目标类别。</span></div>
+<p>Pattern recognition（模式识别）从观测数据判断对象或类别。水果分类的输入是两项特征；语音识别可从声学信号判断语言单位；图像识别可从像素或图像特征判断物体。输入形式不同，但都需要说明输出代表什么、正确答案如何确定。</p>
+<h4 id="control-task">Control and robotics（控制与机器人）</h4>
+<div class="importance"><span class="rating">重要性：★★★☆☆ · 3/5 理解支撑</span><span>理由：动作会改变环境，帮助理解智能系统为何不止产生一个标签。</span></div>
+<p>Control and robotics（控制与机器人）更进一步：输出会改变环境。分拣机械臂不能只给“合格”的文字，它还要输出位置或动作。Modeling and estimation（建模与估计）用观测推断系统状态或关系，为动作决策提供依据；一次分类正确不等于整套控制已经稳定、快速和可靠。</p>
+<h4 id="memory-task">Associative memory（联想记忆）</h4>
+<div class="importance"><span class="rating">重要性：★★★☆☆ · 3/5 理解支撑</span><span>理由：需要区分恢复模式与预测类别，避免把不同输出任务混为一谈。</span></div>
+<p>Associative memory（联想记忆）也叫 Content-addressable memory（内容寻址记忆），用部分内容或受扰动线索找回相关模式，而不是先给出一个精确存储地址。Tutorial 第 19 页依次展示干净图、加噪图和恢复图；看的是“模式被破坏后能否恢复”，不能把一张示意图当作所有噪声条件下都成功的证明。Lippmann 还区分类别判断、返回代表性模式、把输入组成若干组这三种任务：答案分别可能是类别、模式或组别，它们并不相同。</p>
+<h4 id="forecast-task">Forecasting（预测）</h4>
+<div class="importance"><span class="rating">重要性：★★★☆☆ · 3/5 理解支撑</span><span>理由：时间变化说明训练表现与未来表现之间仍需检验。</span></div>
+<p>Forecasting（预测）依据已有观测估计未来数值或状态。即便历史样本拟合良好，也必须检查时间变化、输入范围和评价方法。主课件第 23 页的报刊截页上可读到 1997 年 11 月 10 日；它反映当时对神经网络应用的介绍，不能当作今天预测效果的实证。第 10 页注明的旧新闻标题及第 22 页的机器人报道同样主要承担历史背景作用，其中愿景或“如果成功”的措辞不是已完成能力。</p>
+<p class="source">原资料：<a href="Lecture_slides_full%20semester.pdf#page=10">Lecture_slides_full semester.pdf，PDF实际第10、21–23页</a>；<a href="course_files_export/Tutorials/Tutorial%201.pdf#page=17">course_files_export/Tutorials/Tutorial 1.pdf，PDF实际第17–20、25、29–30页</a>；<a href="course_files_export/ASSPM-Lippmann1987.pdf#page=2">course_files_export/ASSPM-Lippmann1987.pdf，PDF实际第2–3页</a>。输入输出分析为教学补充。</p>
+<h3 id="modern-context">Modern context（现代背景）：能力增长与评价问题并存</h3>
+<div class="importance"><span class="rating">重要性：★★☆☆☆ · 2/5 局部拓展</span><span>理由：认识当代例子有助于建立课程动机，但本周主线仍是统一框架。</span></div>
+<p>Transformer 是 2017 年论文提出的一种网络结构，原论文研究机器翻译。它为后来的许多语言模型提供重要基础，但不能把生成式 AI 的全部历史归于一种结构。这里的 Large language model（大型语言模型，LLM）只作为神经网络应用的背景例子，不在本周展开注意力、Transformer 或具体产品使用方法。</p>
+<p>Tutorial 第 36–38 页提出几类方向：Multimodal（多模态）处理多种信息形式；AI agents（人工智能代理）围绕目标规划并使用工具；Edge AI（边缘人工智能）把计算放到接近设备或数据的位置；AI for Science（人工智能用于科学）支持科学问题研究。这里把它们理解为应用与研究方向，不作“哪项技术已全面成熟”的判断。</p>
+<p>这些方向都需要评价可靠性。Hallucination（幻觉）指输出听起来合理却不真实；Explainability（可解释性）关注人能否理解判断依据；Alignment（对齐）关注行为是否符合所设目标与人的要求。偏差、安全与误用、资源消耗同样是系统设计问题。Tutorial 提到的就业、武器化和伦理风险属于需要分析的可能影响，不能当作已经注定发生的结果；“应有全球治理”是规范性主张，不是数学结论。</p>
+<div class="callout"><span class="callout-title">时效性材料的处理</span><p>Tutorial 第 31 页的引用次数缺少数据库与统计时点，第 32 页的模型版本、发布时间及“开源”标签未在本教材逐项核实，因此不纳入事实清单。第 34 页时间线中关于未来 AGI、超级智能等图示也不作为已发生事件。已核验并保留的只是 2017 年论文等稳定历史节点。</p></div>
+<p class="source">原资料背景：<a href="course_files_export/Tutorials/Tutorial%201.pdf#page=31">course_files_export/Tutorials/Tutorial 1.pdf，PDF实际第31–38页</a>；外部核验：<a href="https://arxiv.org/abs/1706.03762">Attention Is All You Need（2017）</a>。没有使用未核验的产品清单支撑正文。</p>
+<p class="chapter-bridge">历史中的模型名称很多，但我们可以用同一种提问方式读它们：有哪些部件，部件怎样计算，怎样评价，怎样改变？这就是 ARCH/RULE 的作用。</p>
+</section>
+<section>
+<h2 id="ann-architecture">5 · ANN 的结构：有哪些量，谁与谁相连</h2>
+<h3 id="ann">Artificial neural network（人工神经网络，ANN）</h3>
+<div class="importance"><span class="rating">重要性：★★★★★ · 5/5 核心基础</span><span>理由：节点、连接和可调参数是理解所有后续网络的共同基础。</span></div>
+<p>一个神经元单元可以接收若干输入、合并这些输入，再产生一个输出。把许多这样的单元连接起来，输出就可以成为其他单元的输入，形成网络。ANN 的神经元是数学或计算模型，通常高度简化，不是把生物细胞原样搬进计算机。</p>
+<p>课件把单元称为 Neuron（神经元）、Node（节点）、Processing unit（处理单元）或 Computational element（计算单元）；连接强度称为 Synaptic weight（突触权重）。本教材用“节点”表示图中的计算位置，用“权重”表示某条连接传递信号时的乘数。网络还需要外部输入与输出通道，才有办法与任务环境交互。</p>
+<p>Connectionist model（联结主义模型）强调连接形成能力；Parallel distributed processing（并行分布式处理，PDP）强调多个单元共同处理信息。这些名称帮助理解历史思路。不要因此认定 ANN 必须在专用模拟硬件上运行，或把课件的 Neuromorphic systems（神经形态系统）直接当作所有现代 ANN 的严格同义词。</p>
+<p>课件第 43–44 页用“通过学习取得经验，并将它存于连接中供以后使用”概括神经网络。这里“存储知识”指参数共同编码了输入与输出之间的关系，不意味着每个权重都对应一条可朗读的规则，也不意味着一个权重存一张训练图片。</p>
+<p class="source">原资料：<a href="Lecture_slides_full%20semester.pdf#page=31">Lecture_slides_full semester.pdf，PDF实际第31–36、43–44页</a>；<a href="course_files_export/ASSPM-Lippmann1987.pdf#page=1">course_files_export/ASSPM-Lippmann1987.pdf，PDF实际第1–2页</a>。术语边界与实现方式说明为教学澄清。</p>
+<h3 id="arch">ARCH（结构表述）：把部件与变量列清楚</h3>
+<div class="importance"><span class="rating">重要性：★★★★★ · 5/5 核心基础</span><span>理由：只有分清状态、参数和外部信号，后面的五条规则才有明确对象。</span></div>
+<div class="math-display"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" aria-label="ANN由ARCH和RULE组成，ARCH含u、v、w、x、y"><mtable columnalign="left"><mtr><mtd><mrow><mi>ANN</mi><mo>=</mo><mrow><mo>(</mo><mi>ARCH</mi><mo>,</mo><mi>RULE</mi><mo>)</mo></mrow></mrow></mtd></mtr><mtr><mtd><mrow><mi>ARCH</mi><mo>=</mo><mrow><mo>(</mo><mi mathvariant="bold">u</mi><mo>,</mo><mi mathvariant="bold">v</mi><mo>,</mo><mi mathvariant="bold">w</mi><mo>,</mo><mi mathvariant="bold">x</mi><mo>,</mo><mi mathvariant="bold">y</mi><mo>)</mo></mrow></mrow></mtd></mtr></mtable></math></div>
+<p>ANN 是整个网络模型；ARCH 表示部件与它们的组织，RULE 表示联系这些部件的规则。括号内是有序的组成项，不是乘积。课件用 <strong>u、v、w、x、y</strong> 给出结构的变量框架；真正复现一个网络时，还必须说明哪些节点相连、哪些权重属于哪些连接、输入和输出接在哪里，不能只抄五个字母。</p>
+<div class="table-wrap"><table><thead><tr><th>量与维度</th><th>含义</th><th>先避免的混淆</th></tr></thead><tbody><tr><td><strong>u</strong> ∈ ℝ<sup>N</sup></td><td>N 个节点的聚合净输入，<var>u</var><sub>i</sub> 是第 i 个节点收到的合成信号。</td><td>不是外部输入 x 的另一个名字。</td></tr><tr><td><strong>v</strong> ∈ ℝ<sup>N</sup></td><td>N 个节点的激活状态，<var>v</var><sub>i</sub> 是节点变换后的响应。</td><td>与 u 数量相同，但经过激活后数值可以不同。</td></tr><tr><td><strong>w</strong> ∈ ℝ<sup>M</sup></td><td>M 条被参数化连接的权重；可把所有权重按固定顺序排成向量。</td><td>M 是本表的权重数量，不是类别数。</td></tr><tr><td><strong>x</strong> ∈ ℝ<sup>n</sup></td><td>外部输入，共 n 个分量。</td><td>输入特征数 n 不一定等于节点数 N。</td></tr><tr><td><strong>y</strong> ∈ ℝ<sup>m</sup></td><td>提供给网络外部的输出，共 m 个分量。</td><td>输出维数也不一定等于类别数；二分类可以只输出一个分数。</td></tr></tbody></table></div>
+<p>这些是<strong>实数状态表述</strong>；若某种网络只取二值，它的允许状态是相应实数空间的一个子集。粗体用来提示向量；单独的分量是标量。大写 N、M 与小写 n、m 含义不同。Lippmann 文中用 N 代表输入数、M 代表类别数，那是该论文的局部记号，不能直接套进这张课件符号表。</p>
+<div class="worked-example"><span class="callout-title">教学示例 · 固定一个清楚的计数约定</span><p>本例画三个节点：节点 1、2 仅传递输入，节点 3 执行加权和与激活。两条可调连接为 1 → 3、2 → 3；没有反馈、隐藏层或偏置。于是 <strong>N = 3，M = 2，n = 2，m = 1</strong>。输入传递节点不另增可调权重。某些书不把输入传递点计入计算神经元数；计数不同不改变实际运算，所以必须先声明约定。</p><p>把权重记作 <var>w</var><sub>31</sub>、<var>w</var><sub>32</sub>，本教材约定下标的第一个数为接收节点、第二个数为发送节点。因此它们分别乘 <var>v</var><sub>1</sub>、<var>v</var><sub>2</sub>。后面所有实例都沿用这个方向约定。</p></div>
+<p class="source">原资料：<a href="Lecture_slides_full%20semester.pdf#page=33">Lecture_slides_full semester.pdf，PDF实际第33–34、37页</a>。三节点计数、向量解释及下标约定为教学补充。</p>
+<h3 id="neuron-diagram">Artificial neuron（人工神经元）结构图：从箭头读出计算</h3>
+<div class="importance"><span class="rating">重要性：★★★★★ · 5/5 核心基础</span><span>理由：把图形连接与 G、F、H 的运算对齐，是读网络结构图的基本能力。</span></div>
+<p>先看两条输入箭头：它们先到节点 1、2，再各乘一个权重，汇合到节点 3 的聚合部分。聚合产生 <var>u</var><sub>3</sub>；激活产生 <var>v</var><sub>3</sub>；输出规则选取它作为 <var>y</var>。训练时才利用标签评价结果并改变连接权重。<strong>改变参数的训练箭头不是本模型前向运行中的反馈连接。</strong></p>
+<figure><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 510" role="img" aria-labelledby="w01-svg2-neuron-title"><title id="w01-svg2-neuron-title">人工神经元及其训练信息：输入经权重聚合、激活和输出，评价用于学习更新</title><defs><marker id="w01-svg2-neuron-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#17645b"></path></marker></defs><text x="85" y="27" text-anchor="middle" font-size="18" fill="#202d35"><tspan x="85" dy="0">外部输入 x</tspan></text><text x="445" y="27" text-anchor="middle" font-size="18" fill="#202d35"><tspan x="445" dy="0">计算节点 3</tspan></text><rect x="10" y="60" width="150" height="70" rx="10" fill="#edf5f1" stroke="#9dbbb3"></rect><text x="85.0" y="87.5" text-anchor="middle" font-size="17" fill="#202d35"><tspan x="85.0" dy="0">Input node 1</tspan><tspan x="85.0" dy="27">v₁ = x₁</tspan></text><rect x="10" y="187" width="150" height="70" rx="10" fill="#edf5f1" stroke="#9dbbb3"></rect><text x="85.0" y="214.5" text-anchor="middle" font-size="17" fill="#202d35"><tspan x="85.0" dy="0">Input node 2</tspan><tspan x="85.0" dy="27">v₂ = x₂</tspan></text><path d="M160 95 H230 L285 157" fill="none" stroke="#17645b" stroke-width="2" marker-end="url(#w01-svg2-neuron-arrow)"></path><path d="M160 222 H230 L285 175" fill="none" stroke="#17645b" stroke-width="2" marker-end="url(#w01-svg2-neuron-arrow)"></path><text x="222" y="80" text-anchor="middle" font-size="20" fill="#202d35"><tspan x="222" dy="0">w₃₁</tspan></text><text x="222" y="248" text-anchor="middle" font-size="20" fill="#202d35"><tspan x="222" dy="0">w₃₂</tspan></text><rect x="287" y="128" width="118" height="85" rx="10" fill="#edf5f1" stroke="#9dbbb3"></rect><text x="346.0" y="163.0" text-anchor="middle" font-size="18" fill="#202d35"><tspan x="346.0" dy="0">G · 聚合</tspan><tspan x="346.0" dy="27">u₃ = Σwv</tspan></text><path d="M405 171 H453" fill="none" stroke="#17645b" stroke-width="2" marker-end="url(#w01-svg2-neuron-arrow)"></path><text x="430" y="150" text-anchor="middle" font-size="19" fill="#202d35"><tspan x="430" dy="0">u₃</tspan></text><rect x="455" y="128" width="113" height="85" rx="10" fill="#edf5f1" stroke="#9dbbb3"></rect><text x="511.5" y="163.0" text-anchor="middle" font-size="17" fill="#202d35"><tspan x="511.5" dy="0">F · 激活</tspan><tspan x="511.5" dy="27">v₃ = f(u₃)</tspan></text><path d="M568 171 H617" fill="none" stroke="#17645b" stroke-width="2" marker-end="url(#w01-svg2-neuron-arrow)"></path><text x="593" y="150" text-anchor="middle" font-size="19" fill="#202d35"><tspan x="593" dy="0">v₃</tspan></text><rect x="620" y="128" width="118" height="85" rx="10" fill="#edf5f1" stroke="#9dbbb3"></rect><text x="679.0" y="163.0" text-anchor="middle" font-size="18" fill="#202d35"><tspan x="679.0" dy="0">H · 输出</tspan><tspan x="679.0" dy="27">y = v₃</tspan></text><rect x="273" y="110" width="311" height="122" rx="14" fill="none" stroke="#55656d" stroke-dasharray="5 4"></rect><path d="M679 213 V345 H592" fill="none" stroke="#17645b" stroke-width="2" marker-end="url(#w01-svg2-neuron-arrow)"></path><rect x="407" y="318" width="185" height="70" rx="10" fill="#edf5f1" stroke="#9dbbb3"></rect><text x="499.5" y="345.5" text-anchor="middle" font-size="17" fill="#202d35"><tspan x="499.5" dy="0">E · 评价</tspan><tspan x="499.5" dy="27">对比 y 与标签 d</tspan></text><text x="675" y="361" text-anchor="middle" font-size="17" fill="#202d35"><tspan x="675" dy="0">d：训练标签</tspan></text><path d="M666 377 H596" fill="none" stroke="#17645b" stroke-width="2" marker-end="url(#w01-svg2-neuron-arrow)"></path><path d="M407 353 H337" fill="none" stroke="#17645b" stroke-width="2" marker-end="url(#w01-svg2-neuron-arrow)"></path><rect x="168" y="318" width="168" height="70" rx="10" fill="#edf5f1" stroke="#9dbbb3"></rect><text x="252.0" y="345.5" text-anchor="middle" font-size="17" fill="#202d35"><tspan x="252.0" dy="0">L · 学习</tspan><tspan x="252.0" dy="27">产生权重更新</tspan></text><path d="M220 318 V264" fill="none" stroke="#17645b" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#w01-svg2-neuron-arrow)"></path><text x="113" y="295" text-anchor="middle" font-size="14" fill="#202d35"><tspan x="113" dy="0">更新 w₃₁ 与 w₃₂</tspan></text><text x="375" y="437" text-anchor="middle" font-size="17" fill="#202d35"><tspan x="375" dy="0">实线：数据处理与训练信息的流向</tspan><tspan x="375" dy="27">虚线更新箭头：改变权重；不是前向网络中的循环连接</tspan></text><text x="375" y="495" text-anchor="middle" font-size="17" fill="#202d35"><tspan x="375" dy="0">训练时使用 d；预测新水果时可只输入 x。</tspan></text></svg></div><figcaption>图2 · 人工神经元教学示意图。依据主课件实际第32–37页与Lippmann实际第2页Fig.1自绘。输入节点计入N；虚框内是计算节点3的聚合与激活。Σwv在本图指两项对应乘积之和。<span class="scroll-hint">窄屏阅读时，可在图内左右滑动。</span></figcaption></figure>
+<p>本例用最小结构说明各部件，规模小到不需要“大量并行”。大型网络会重复许多这种局部计算，把中间响应继续传给后续节点。结构图的作用是解释数据经过哪些部件；如果没有规则和参数，仅凭图形还算不出结果。</p>
+<p class="source">教学示意图，依据 <a href="Lecture_slides_full%20semester.pdf#page=32">Lecture_slides_full semester.pdf，PDF实际第32–37页</a> 与 <a href="course_files_export/ASSPM-Lippmann1987.pdf#page=2">course_files_export/ASSPM-Lippmann1987.pdf，PDF实际第2页，Fig. 1</a> 自绘；不是原课件截图，也不是第 2 周的 M-P 逻辑门模型。</p>
+<h3 id="weights">Weights（权重）与 Distributed representation（分布式表示）</h3>
+<div class="importance"><span class="rating">重要性：★★★★☆ · 4/5 重要方法</span><span>理由：权重符号和存储方式决定怎样解释参数变化，也限定“像大脑”的类比。</span></div>
+<p>本例的可调权重体现 Adaptivity（适应性）的可能：调整权重可以改变以后的输出。固定其他量时，一个正权重使相应输入的增加提高加权和，一个负权重使相应输入的增加降低加权和。课件用 Excitatory（兴奋性）与 Inhibitory（抑制性）命名这两种影响。对于非负输入，正负权重的“推高/拉低”类比尤其直观；若输入本身为负，还要看乘积的符号，不能只盯权重。</p>
+<p>分布式表示的关键是“多个连接共同决定行为”。A 的响应不是从名为“A”的单独存储格取出，而由两项输入与两项权重共同计算。大型网络的知识关系更可能分散在许多连接中。某些连接被扰动时影响可能有限，但也可能破坏关键功能，不能从“分布式”直接推出任意损坏都无害。</p>
+<p>课件把这种表示与传统数字计算机作对照，是在强调知识组织方式；数字计算机完全可以保存权重并模拟同一网络。数学模型的并行结构、软件执行顺序和实际硬件并行度是不同层面的事情。</p>
+<p class="source">原资料：<a href="Lecture_slides_full%20semester.pdf#page=36">Lecture_slides_full semester.pdf，PDF实际第36、43–44页</a>；<a href="course_files_export/ASSPM-Lippmann1987.pdf#page=1">course_files_export/ASSPM-Lippmann1987.pdf，PDF实际第1–2页</a>。符号条件与计算机实现边界为教学补充。</p>
+<p class="chapter-bridge">ARCH 告诉我们有哪些量。下一章规定它们之间如何变换，完成一次可以核算的预测与学习。</p>
+</section>
+<section>
+<h2 id="rules">6 · RULE：从输入走到输出，再走到参数更新</h2>
+<p>课件写 RULE = (E, F, G, H, L)。这是一份组成清单，不是执行顺序。我们按实际计算需要依次讲 G → F → H，再讲 E 与 L。</p>
+<h3 id="aggregation">Aggregation rule（聚合规则，G）：形成净输入</h3>
+<div class="importance"><span class="rating">重要性：★★★★★ · 5/5 核心基础</span><span>理由：G 规定信号怎样汇合，是把结构图翻译成计算的第一步。</span></div>
+<div class="math-display"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" aria-label="净输入由G计算，u1=x1，u2=x2，u3=w31 v1+w32 v2"><mtable columnalign="left"><mtr><mtd><mrow><mi mathvariant="bold">u</mi><mo>=</mo><mi>G</mi><mrow><mo>(</mo><mi mathvariant="bold">v</mi><mo>,</mo><mi mathvariant="bold">w</mi><mo>,</mo><mi mathvariant="bold">x</mi><mo>)</mo></mrow></mrow></mtd></mtr><mtr><mtd><mrow><msub><mi>u</mi><mn>1</mn></msub><mo>=</mo><msub><mi>x</mi><mn>1</mn></msub><mo>,</mo><msub><mi>u</mi><mn>2</mn></msub><mo>=</mo><msub><mi>x</mi><mn>2</mn></msub></mrow></mtd></mtr><mtr><mtd><mrow><msub><mi>u</mi><mn>3</mn></msub><mo>=</mo><msub><mi>w</mi><mn>31</mn></msub><msub><mi>v</mi><mn>1</mn></msub><mo>+</mo><msub><mi>w</mi><mn>32</mn></msub><msub><mi>v</mi><mn>2</mn></msub></mrow></mtd></mtr></mtable></math></div>
+<p>第一行表示 G 可依赖节点状态 <strong>v</strong>、权重 <strong>w</strong> 和外部输入 <strong>x</strong>，输出与节点数一致的净输入向量 <strong>u</strong>。本例右侧三个式子把它具体化：先令两个输入节点的净输入等于外部特征，再将它们传出的状态加权送入节点 3。<var>w</var><sub>31</sub>、<var>w</var><sub>32</sub> 是两个标量，乘法后相加得到标量 <var>u</var><sub>3</sub>。</p>
+<p>这个写法不是要求同时解一个神秘的循环：先处理输入节点，得到 <var>v</var><sub>1</sub>、<var>v</var><sub>2</sub>，再计算节点 3。对于带反馈的网络，G 才可能需要先前时刻的状态；那时必须补出时间下标或稳定状态条件。</p>
+<div class="worked-example"><span class="callout-title">教学示例 · A 的聚合</span><p>输入节点直接传值，所以 <var>v</var><sub>1</sub> = 0.8，<var>v</var><sub>2</sub> = 0.2。取权重 0.6、0.2，节点 3 的净输入为 0.6 × 0.8 + 0.2 × 0.2 = 0.52。此时完整净输入向量为 (0.8, 0.2, 0.52)，包含三个分量，和 N = 3 一致。</p></div>
+<p class="source">原资料：<a href="Lecture_slides_full%20semester.pdf#page=35">Lecture_slides_full semester.pdf，PDF实际第35、37页</a>；逐节点方程与数值为教学补充。</p>
+<h3 id="activation">Activation rule（激活规则，F）：净输入如何变成节点状态</h3>
+<div class="importance"><span class="rating">重要性：★★★★★ · 5/5 核心基础</span><span>理由：F 解释 u 与 v 的区别，并说明网络为什么不只是反复相加。</span></div>
+<p>聚合只回答“合成了多少信号”。激活回答“节点对此如何响应”。若直接传出净输入，就是恒等变换；若做非线性变换，响应可以有饱和区、阈值或其他形状。为方便手算，本例采用 Saturating linear activation（饱和线性激活）：在 0 与 1 之间直接传递，越过端点后停在端点。</p>
+<div class="math-display"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" aria-label="饱和线性激活：a不大于0时为0，0到1之间为a，不小于1时为1"><mtable columnalign="left"><mtr><mtd><mrow><mi mathvariant="bold">v</mi><mo>=</mo><mi>F</mi><mrow><mo>(</mo><mi mathvariant="bold">u</mi><mo>)</mo></mrow><mo>,</mo><msub><mi>v</mi><mn>1</mn></msub><mo>=</mo><msub><mi>u</mi><mn>1</mn></msub><mo>,</mo><msub><mi>v</mi><mn>2</mn></msub><mo>=</mo><msub><mi>u</mi><mn>2</mn></msub></mrow></mtd></mtr><mtr><mtd><mrow><msub><mi>v</mi><mn>3</mn></msub><mo>=</mo><mi>f</mi><mrow><mo>(</mo><msub><mi>u</mi><mn>3</mn></msub><mo>)</mo></mrow></mrow></mtd></mtr><mtr><mtd><mrow><mi>f</mi><mrow><mo>(</mo><mi>a</mi><mo>)</mo></mrow><mo>=</mo><mrow><mo>{</mo><mtable columnalign="left left"><mtr><mtd><mn>0</mn></mtd><mtd><mrow><mi>a</mi><mo>≤</mo><mn>0</mn></mrow></mtd></mtr><mtr><mtd><mi>a</mi></mtd><mtd><mrow><mn>0</mn><mo>&lt;</mo><mi>a</mi><mo>&lt;</mo><mn>1</mn></mrow></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mrow><mi>a</mi><mo>≥</mo><mn>1</mn></mrow></mtd></mtr></mtable></mrow></mrow></mtd></mtr></mtable></math></div>
+<p>F 将 ℝ<sup>3</sup> 中的 <strong>u</strong> 映射到 ℝ<sup>3</sup> 中的 <strong>v</strong>。节点 1、2 的激活取恒等函数，只负责传递输入；节点 3 用标量函数 <var>f</var>。分段中的 <var>a</var> 是任意实数净输入，不是样本编号 A。输出落在 [0,1]。等于 0 或 1 时各段给出相同数值，因此边界定义一致。</p>
+<div class="worked-example"><span class="callout-title">教学示例 · 同一激活函数的三个区间</span><p>若净输入是 −0.2，输出为 0；若净输入是 0.52，输出为 0.52；若净输入是 1.3，输出为 1。前后两段展示“饱和”：继续增大或减小输入，不再按原比例改变输出。因此整个函数不是一个全域线性函数，即使中间一段是直线。</p></div>
+<p>对 A，<strong>u</strong> 与 <strong>v</strong> 恰好都是 (0.8, 0.2, 0.52)，只是因为各值落在恒等区间；这不表示两个符号可以永远合并。若节点 3 收到 1.3，便有 <var>u</var><sub>3</sub> = 1.3、<var>v</var><sub>3</sub> = 1。</p>
+<p class="source">原资料：<a href="Lecture_slides_full%20semester.pdf#page=35">Lecture_slides_full semester.pdf，PDF实际第35、37页</a>；<a href="course_files_export/ASSPM-Lippmann1987.pdf#page=1">course_files_export/ASSPM-Lippmann1987.pdf，PDF实际第1–2页，Fig. 1</a> 展示“加权合并后接非线性”的思路。本例的明确分段与数值均为教学补充，不作为所有 ANN 的统一激活函数。</p>
+<h3 id="output">Output rule（输出规则，H）：网络内部状态怎样交给外部</h3>
+<div class="importance"><span class="rating">重要性：★★★★★ · 5/5 核心基础</span><span>理由：H 分清内部节点状态、模型分数与任务所需决策。</span></div>
+<div class="math-display"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" aria-label="输出规则H选取第三个节点状态作为y"><mrow><mi>y</mi><mo>=</mo><mi>H</mi><mrow><mo>(</mo><mi mathvariant="bold">v</mi><mo>)</mo></mrow><mo>=</mo><msub><mi>v</mi><mn>3</mn></msub></mrow></math></div>
+<p>H 从三维节点状态中选取第三个分量，给出一维输出 <var>y</var>，所以本例 H 的输入维度为 3、输出维度为 1。课件说 y 通常是 v 的一个子集，应理解为“选取部分分量”，不是要求把一个向量当作普通集合。其他网络也可对多个分量作规定的读出变换。</p>
+<p>为了完成二分类，我们再定义一个<strong>模型之外的决策规则</strong>：分数至少为 0.5 就判合格，否则判不合格。用 <var>ĉ</var> 表示预测类别；<var>ĉ</var> ∈ {0,1}，而 <var>y</var> 可以是 0 到 1 之间的实数。这个 0.5 是本例明确选定的界限；它不是 M-P 逻辑门推导，也不是所有任务的最佳界限。</p>
+<div class="math-display"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" aria-label="预测类别：分数至少0.5为1，否则为0"><mrow><mover><mi>c</mi><mo>^</mo></mover><mo>=</mo><mrow><mo>{</mo><mtable columnalign="left left"><mtr><mtd><mn>1</mn></mtd><mtd><mrow><mi>y</mi><mo>≥</mo><mn>0.5</mn></mrow></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mrow><mi>y</mi><mo>&lt;</mo><mn>0.5</mn></mrow></mtd></mtr></mtable></mrow></mrow></math></div>
+<p>A 的 <var>y</var> = 0.52，所以 <var>ĉ</var> = 1；B 的 <var>y</var> = 0.28，所以 <var>ĉ</var> = 0。<strong>输出数值在 0–1 之间，不足以证明它已经是校准良好的概率</strong>。本例只称它为分数。</p>
+<p class="source">原资料：<a href="Lecture_slides_full%20semester.pdf#page=37">Lecture_slides_full semester.pdf，PDF实际第37页</a>；H 的具体选取及分数到类别的规则为教学补充。分数与类别分离的思想亦见 <a href="course_files_export/ASSPM-Lippmann1987.pdf#page=2">course_files_export/ASSPM-Lippmann1987.pdf，PDF实际第2–3页，Fig. 2</a>。</p>
+<h3 id="evaluation">Evaluation rule（评价规则，E）：把表现变成可比较的数</h3>
+<div class="importance"><span class="rating">重要性：★★★★★ · 5/5 核心基础</span><span>理由：没有明确的评价标准，“更好的模型”就没有可检验的含义。</span></div>
+<p>有了预测，怎样比较两组权重？先为每个样本定义误差。本例希望合格样本的输出靠近 1，不合格样本的输出靠近 0，于是采用 Squared error（平方误差）的一半作为单样本评价。</p>
+<div class="math-display"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" aria-label="残差e=d-y，评价E为残差平方的一半"><mtable columnalign="left"><mtr><mtd><mrow><mi>e</mi><mo>=</mo><mi>d</mi><mo>−</mo><mi>y</mi></mrow></mtd></mtr><mtr><mtd><mrow><mi>E</mi><mrow><mo>(</mo><mi>y</mi><mo>,</mo><mi>d</mi><mo>)</mo></mrow><mo>=</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><msup><mrow><mo>(</mo><mi>d</mi><mo>−</mo><mi>y</mi><mo>)</mo></mrow><mn>2</mn></msup><mo>=</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><msup><mi>e</mi><mn>2</mn></msup></mrow></mtd></mtr></mtable></math></div>
+<p><var>d</var> 是给定标签，<var>y</var> 是预测分数；<var>e</var> 是带正负的残差，<var>E</var> 是一个非负实数。平方使高估与低估都产生正代价，并使偏差大的样本代价更大；前面的 1/2 是本例的缩放约定，不改变比较次序。这里输入与输出无量纲，因此 E 也无量纲。若输出有物理单位，平方误差具有该单位的平方。</p>
+<p>这个 E 的显式输入是 (y,d)，维度为两个标量到一个标量。课件第 37 页将 E 概括为从 v 和/或 y 到实数的映射；用于监督学习时，期望值 d 可以被看作环境给定的固定参照。本教材把它写出来，防止误以为没有标签也能计算这个监督误差。其他任务可以评价节点整体状态的 Energy（能量）或其他目标，E 不必总是本式。</p>
+<div class="worked-example"><span class="callout-title">教学示例 · 预测正确仍可有非零误差</span><p>A 的标签为 1，模型输出为 0.52：残差 1 − 0.52 = 0.48；平方是 0.2304；取一半得 E = 0.1152。它的类别已经判对，但分数还没有达到本例的目标值 1。</p><p>B 的标签为 0，模型输出 0.28：残差 −0.28，平方为 0.0784，E = 0.0392。正负残差不同，两种偏差都会被罚。若只用类别对错评价，A 与 B 都是正确；这说明“分类错误数”与“分数平方误差”衡量的内容不同。</p></div>
+<div class="math-display"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" aria-label="平均评价是K个样本单样本评价的和除以K"><mrow><mover><mi>E</mi><mo>¯</mo></mover><mo>=</mo><mfrac><mn>1</mn><mi>K</mi></mfrac><munderover><mo>∑</mo><mrow><mi>p</mi><mo>=</mo><mn>1</mn></mrow><mi>K</mi></munderover><msup><mi>E</mi><mrow><mo>(</mo><mi>p</mi><mo>)</mo></mrow></msup></mrow></math></div>
+<p><var>K</var> 为样本数，要求 K &gt; 0；<var>p</var> 为样本编号，E<sup>(p)</sup> 是第 p 个样本的单样本评价，上标括号不是乘方。本例 K = 4，平均评价 <var>Ē</var> 把四个样本同等对待。下面对每个样本重复相同的前向运算。</p>
+<div class="table-wrap"><table><thead><tr><th>样本</th><th>净输入 = 输出分数</th><th>预测 / 标签</th><th>单样本 E</th></tr></thead><tbody><tr><td>A</td><td>0.48 + 0.04 = 0.52</td><td>1 / 1</td><td>0.1152</td></tr><tr><td>B</td><td>0.12 + 0.16 = 0.28</td><td>0 / 0</td><td>0.0392</td></tr><tr><td>C</td><td>0.42 + 0.06 = 0.48</td><td>0 / 1</td><td>0.1352</td></tr><tr><td>D</td><td>0.18 + 0.14 = 0.32</td><td>0 / 0</td><td>0.0512</td></tr></tbody></table></div>
+<p>四项之和为 0.3408，平均为 0.3408 ÷ 4 = <strong>0.0852</strong>；分类正确 3 个，正确比例为 3/4 = 75%。只报告“误差 0.0852”却不说明定义和数据集，读者无法判断它是什么。</p>
+<p class="source">原资料：<a href="Lecture_slides_full%20semester.pdf#page=37">Lecture_slides_full semester.pdf，PDF实际第37–38页</a>。标签显式化、误差形式、平均与整张数值表均为教学补充。</p>
+<h3 id="learning-rule">Learning rule（学习规则，L）：根据评价改变参数</h3>
+<div class="importance"><span class="rating">重要性：★★★★★ · 5/5 核心基础</span><span>理由：学习改变的是以后的输入输出关系，不能用一次预测代替学习。</span></div>
+<p>G、F、H 使网络能够运行；E 使表现能够比较；L 才规定怎样调整可适应参数。本周先用一个完全可检查的“尝试候选并比较”的规则展示学习含义，不引入感知机更新、梯度或 BP。</p>
+<div class="worked-example"><span class="callout-title">教学示例 · 一次有限候选搜索式学习</span><p><strong>已知：</strong>仍用四个训练样本、同一激活函数和平方误差。<strong>规则：</strong>比较当前权重与两组预设候选，保留平均误差最小的一组；若并列则保留当前组。它只是用于解释 L 的教学规则，未声称是课件给出的标准算法。</p><div class="table-wrap"><table><thead><tr><th>候选权重 (<var>w</var><sub>31</sub>, <var>w</var><sub>32</sub>)</th><th>A、B、C、D 输出</th><th>平均评价</th></tr></thead><tbody><tr><td>(0.6, 0.2)，当前</td><td>0.52，0.28，0.48，0.32</td><td>0.0852</td></tr><tr><td>(0.8, 0.2)，候选一</td><td>0.68，0.32，0.62，0.38</td><td>0.0617</td></tr><tr><td>(0.8, 0.0)，候选二</td><td>0.64，0.16，0.56，0.24</td><td>0.0508</td></tr></tbody></table></div><p>以候选二为例，A 的误差为 (1 − 0.64)² ÷ 2 = 0.0648；B 为 0.16² ÷ 2 = 0.0128；C 为 0.44² ÷ 2 = 0.0968；D 为 0.24² ÷ 2 = 0.0288。总和 0.2032，再除以 4 得 0.0508。它小于其余两组，因此这一步选 (0.8, 0.0)。</p><p>权重变化为 (0.8 − 0.6, 0.0 − 0.2) = <strong>(0.2, −0.2)</strong>。再次运行时，C 的分数从 0.48 变成 0.56，类别由 0 变为 1，四个训练样本现在都判对。</p></div>
+<p>这一改进有精确而有限的含义：在这四个样本、这项评价、这三个候选中，所选参数最好。它既没有证明是所有权重中的最优，也没有证明忽略损伤适合现实任务。当前训练样本恰好让成熟度和损伤一起变化，信息不足可能使模型学到不可靠的捷径。</p>
+<p>此例的 L 依赖整批输入和标签；课件 L(v,w,x) 是一般框架的简写，不穷尽每种具体算法的所有信息。一个完全给定的学习过程还需明确初始化、候选或更新生成方式、使用的样本、评价和停止条件。“权重可调”只是学习的可能性；随意改权重可能使性能更差。</p>
+<p class="source">原资料框架：<a href="Lecture_slides_full%20semester.pdf#page=37">Lecture_slides_full semester.pdf，PDF实际第37–38、40页</a>；候选比较和数值计算为教学补充。</p>
+<h3 id="unified-example">ARCH/RULE（结构与规则）完整对照：现在能复现什么</h3>
+<div class="importance"><span class="rating">重要性：★★★★★ · 5/5 核心基础</span><span>理由：将所有符号放回同一个实例，检验是否真正理解统一框架。</span></div>
+<div class="table-wrap"><table><thead><tr><th>项目</th><th>本例中的具体对象</th></tr></thead><tbody><tr><td>ARCH</td><td>两个输入传递节点、一个计算节点、两条有向可调连接；N=3、M=2、n=2、m=1。</td></tr><tr><td>x / w</td><td>A 的 x=(0.8,0.2)；初始 w=(0.6,0.2)，学习后 w=(0.8,0)。</td></tr><tr><td>u / v / y</td><td>初始处理 A 时，u=v=(0.8,0.2,0.52)，y=0.52；数值相同是本次输入落在激活的中段。</td></tr><tr><td>G</td><td>输入传递，再将两个节点的状态加权相加。</td></tr><tr><td>F</td><td>输入节点恒等；计算节点使用 0–1 饱和线性变换。</td></tr><tr><td>H</td><td>选取 v 的第三个分量，输出分数 y。</td></tr><tr><td>E</td><td>将分数与外部标签 d 比较，计算半平方误差，再对四个样本平均。</td></tr><tr><td>L</td><td>在明确给定的三个权重候选中，以较小平均误差为准选择新权重。</td></tr></tbody></table></div>
+<p>标签 d、类别判定界限和训练集不是五个 ARCH 符号全部包含的信息。它们属于任务或训练环境，需要在模型说明中补足。会写 ANN = (ARCH, RULE)，意味着知道该继续追问哪些定义，而不是仅凭这个缩写就得到了一个可以运行的网络。</p>
+<p class="source">综合 <a href="Lecture_slides_full%20semester.pdf#page=33">Lecture_slides_full semester.pdf，PDF实际第33–40页</a> 的教学示例。全部计算可用普通计算器复核。</p>
+</section>
+<section>
+<h2 id="learning-dynamics">7 · 学习的信息来源与两种时间尺度</h2>
+<h3 id="supervision">Supervised learning（监督学习）与 Unsupervised learning（无监督学习）</h3>
+<div class="importance"><span class="rating">重要性：★★★★★ · 5/5 核心基础</span><span>理由：是否提供目标信息，直接决定可计算什么评价、可采用什么学习规则。</span></div>
+<p>监督学习的“监督”不表示必须有老师站在旁边逐次纠正，而是训练过程中提供了目标或标签。水果训练集的每一行都有 d，模型因此能比较“自己输出的分数”与“应当输出的目标”。标签可以来自人工标注、测量结果或其他可靠过程，但标签本身也可能出错，不能把“有标签”理解为“答案绝对真实”。</p>
+<p>无监督学习只给输入数据，不给本次任务的正确类别。它可以寻找输入间的结构，例如把相似水果分成若干组。这里的 Group/Cluster（组/簇）由相似性标准和算法决定；“第 1 组”不自动等于“合格”。要赋予组以业务意义，仍需要额外解释或检查。</p>
+<div class="worked-example"><span class="callout-title">教学示例 · 去掉标签后还能知道什么</span><p>暂时遮住 d 列。A 与 C 的两个特征分别只相差 0.1，B 与 D 也各相差 0.1；A 与 B 则各相差 0.6。若采用本例两个同尺度特征的接近程度来比较，A/C 更像一组、B/D 更像另一组。但没有标签时，你不能单凭组号断定哪组合格。本段只说明相似性的直觉，不执行某个聚类算法。</p></div>
+<p>Lippmann 的分类图先按二值或连续值输入划分，再按是否提供监督信息划分。原文把某些给定代表模式的联想记忆训练也放在 supervised 一侧。这是作者针对所讨论六种网络的分组方式，不能看到 Hopfield 这个名称就脱离训练目标和实现细节，给所有版本贴上永久的监督/无监督标签。</p>
+<p>无监督并不意味着没有目标函数、没有人为选择或没有评价；它只是否定“给定正确类别”这一类训练信息。同样，监督学习也不等于每次运行都必须输入标签：训练后给新水果做预测，可以只提供 x。</p>
+<p class="source">原资料：<a href="Lecture_slides_full%20semester.pdf#page=38">Lecture_slides_full semester.pdf，PDF实际第38、42页</a>；<a href="course_files_export/ASSPM-Lippmann1987.pdf#page=3">course_files_export/ASSPM-Lippmann1987.pdf，PDF实际第3页，Fig. 3；4，A taxonomy of neural nets</a>。水果分组为教学补充。</p>
+<h3 id="generalization">Generalization（泛化）：对新输入是否仍然有效</h3>
+<div class="importance"><span class="rating">重要性：★★★★★ · 5/5 核心基础</span><span>理由：训练改进的实际价值取决于模型面对未见样本时的表现。</span></div>
+<p>如果只要求记住 A、B、C、D 的标签，直接存一张查找表就够了。学习模型更有用的目标是对新输入作出合理判断。这个从已有经验推广到新情况的能力就是泛化，它与前面的归纳推理相连。</p>
+<p><strong>教学补充。</strong>评价新情况时，可以预先留出一些带标签样本，训练时不让它们参与选参数，之后用它们检查模型。若不断根据这批样本挑模型，它们也被间接用于训练决策，就不再是独立的最终检验。样本还要反映实际使用环境，否则一个漂亮分数可能只是数据选择造成的。</p>
+<div class="worked-example"><span class="callout-title">教学示例 · 一个新水果，不是一份证明</span><p>取新输入 Q=(0.65,0.35)，假定另行给定的真实标签是 1。学习后的权重 (0.8,0) 给出净输入 0.8 × 0.65 + 0 × 0.35 = 0.52；激活后仍为 0.52，因此判为 1。Q 在这一次检验中正确。</p><p>再考虑 R=(0.9,0.9)，若任务标签是 0，模型却输出 0.72、判为 1。它把“成熟”当作了足够证据，忽略严重损伤。这个教学反例说明：训练样本没有覆盖的重要情况，会限制学到的关系。Q 成功和 R 失败都不能替代有代表性的系统评价。</p></div>
+<p>Training（训练）关注根据经验修改参数；Prediction / inference（预测 / 推断）关注用现有参数计算输出；Evaluation（评价）关注按某个标准衡量表现。这三种动作可以在同一工作流程中出现，但概念不同。模型运行一万次而参数保持不变，不自动意味着训练了一万次。</p>
+<p class="source">原资料主线：<a href="Lecture_slides_full%20semester.pdf#page=4">Lecture_slides_full semester.pdf，PDF实际第4、9、38页</a>；<a href="course_files_export/ASSPM-Lippmann1987.pdf#page=1">course_files_export/ASSPM-Lippmann1987.pdf，PDF实际第1–3页</a>。留出数据、Q/R 反例及评价说明为必要教学补充。</p>
+<h3 id="discrete-continuous">Discrete-time learning（离散时间学习）与 Continuous-time learning（连续时间学习）</h3>
+<div class="importance"><span class="rating">重要性：★★★★☆ · 4/5 重要方法</span><span>理由：辨清更新量、变化率和时间变量，才能正确读课件的一般学习方程。</span></div>
+<p>离散时间把学习写成一次一次的更新。为了不与真实时间混淆，本教材把更新次数记为整数 k；课件第 40 页用 t 表示这个离散索引。下面的 Δ 读作“变化量”。</p>
+<div class="math-display"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" aria-label="下一步权重等于当前权重加更新量，L增量返回该更新量"><mtable columnalign="left"><mtr><mtd><mrow><msub><mi mathvariant="bold">w</mi><mrow><mi>k</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>=</mo><msub><mi mathvariant="bold">w</mi><mi>k</mi></msub><mo>+</mo><mrow><mi>Δ</mi><msub><mi mathvariant="bold">w</mi><mi>k</mi></msub></mrow></mrow></mtd></mtr><mtr><mtd><mrow><mrow><mi>Δ</mi><msub><mi mathvariant="bold">w</mi><mi>k</mi></msub></mrow><mo>=</mo><msub><mi>L</mi><mi>Δ</mi></msub><mrow><mo>(</mo><msub><mi mathvariant="bold">v</mi><mi>k</mi></msub><mo>,</mo><msub><mi mathvariant="bold">w</mi><mi>k</mi></msub><mo>,</mo><msub><mi mathvariant="bold">x</mi><mi>k</mi></msub><mo>)</mo></mrow></mrow></mtd></mtr></mtable></math></div>
+<p><strong>w</strong><sub>k</sub> 与 <strong>w</strong><sub>k+1</sub> 都是 M 维权重向量，Δ<strong>w</strong><sub>k</sub> 也是 M 维；每个分量分别相加。L<sub>Δ</sub> 表示返回<strong>本次更新量</strong>的规则；这里照课件列出 v、w、x，具体任务还可需要标签 d、批次信息或其他状态。例中的 L 选出新权重后，两者之差就是 L<sub>Δ</sub> 的输出。</p>
+<div class="worked-example"><span class="callout-title">教学示例 · 用向量更新复算上一章</span><p>旧权重为 (0.6,0.2)，更新量为 (0.2,−0.2)。第一项：0.6+0.2=0.8；第二项：0.2−0.2=0。得到新权重 (0.8,0)。不能把更新量 (0.2,−0.2) 直接当成新权重，也不能把已经是新权重的 (0.8,0) 再与旧值相加。</p></div>
+<p>连续时间则把权重看作随时间 t 变化的量。无需先学会解微分方程，只需把导数理解为“此刻每单位时间改变多少”。</p>
+<div class="math-display"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" aria-label="连续权重变化率由Lc给出，小时间间隔的变化量约等于间隔乘变化率"><mtable columnalign="left"><mtr><mtd><mrow><mfrac><mrow><mi>d</mi><mrow><mi mathvariant="bold">w</mi><mrow><mo>(</mo><mi>t</mi><mo>)</mo></mrow></mrow></mrow><mrow><mi>d</mi><mi>t</mi></mrow></mfrac><mo>=</mo><msub><mi>L</mi><mi>c</mi></msub><mrow><mo>(</mo><mi mathvariant="bold">v</mi><mo>,</mo><mi mathvariant="bold">w</mi><mo>,</mo><mi mathvariant="bold">x</mi><mo>)</mo></mrow></mrow></mtd></mtr><mtr><mtd><mrow><mi mathvariant="bold">w</mi><mrow><mo>(</mo><mi>t</mi><mo>+</mo><mrow><mi>δ</mi><mi>t</mi></mrow><mo>)</mo></mrow><mo>−</mo><mrow><mi mathvariant="bold">w</mi><mrow><mo>(</mo><mi>t</mi><mo>)</mo></mrow></mrow><mo>≈</mo><mrow><mi>δ</mi><mi>t</mi></mrow><msub><mi>L</mi><mi>c</mi></msub><mrow><mo>(</mo><mi mathvariant="bold">v</mi><mo>,</mo><mi mathvariant="bold">w</mi><mo>,</mo><mi mathvariant="bold">x</mi><mo>)</mo></mrow></mrow></mtd></mtr></mtable></math></div>
+<p>t 是连续时间变量；d<strong>w</strong>/dt 是 M 维变化率。L<sub>c</sub> 返回变化率，单位是“权重单位 / 时间单位”；离散更新量的单位则与权重相同。δt 是一个小的正时间间隔。当这段内变化率变化不大时，变化量约为“变化率 × 时间间隔”；这是近似关系，不能随意去掉 δt。</p>
+<div class="worked-example"><span class="callout-title">教学示例 · 变化率不等于一次变化量</span><p>若一小段时间内变化率固定为 (0.2,−0.2) 每时间单位，经过 0.1 时间单位，变化量是 (0.02,−0.02)，旧权重 (0.6,0.2) 变成 (0.62,0.18)。只有持续整整 1 个时间单位且变化率保持不变时，变化量才是 (0.2,−0.2)。在真实学习中变化率通常随状态变化，所以不能总这样直接乘长时间。</p></div>
+<div class="callout misconception"><span class="callout-title">两种“离散 / 连续”不要混淆</span><p>这里划分的是<strong>更新的时间描述</strong>。输入或输出是二值还是实数，是另一维度。一个实数权重网络可以每次读取一个样本后离散更新；“输出连续”并不意味着“按连续时间学习”。</p></div>
+<p class="source">原式已对照图片核验：<a href="Lecture_slides_full%20semester.pdf#page=37">Lecture_slides_full semester.pdf，PDF实际第37、40页</a>。用 L<sub>Δ</sub> / L<sub>c</sub> 区分同名 L 的作用、k 与 t 的区分，以及小步变化率解释为教学澄清。</p>
+<h3 id="two-timescales">Two-time-scale dynamics（双时间尺度动力学）：状态快，权重慢</h3>
+<div class="importance"><span class="rating">重要性：★★★★★ · 5/5 核心基础</span><span>理由：区分暂时活动与长期参数，是理解运行和学习的关键。</span></div>
+<p>把已经选定的权重用于 A 时，网络形成一组 u、v；换成 B，u、v 很快变为另一组。它们描述当前输入下的活动。若权重保持不变，知识关系没有因此重新学一遍。训练则跨样本或跨迭代改变 w，影响此后许多输入的响应。</p>
+<figure><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 370" role="img" aria-labelledby="w01-svg3-timescales-title"><title id="w01-svg3-timescales-title">快状态与慢参数：固定权重处理不同输入，学习之后再使用新权重</title><defs><marker id="w01-svg3-timescales-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#17645b"></path></marker></defs><text x="350" y="27" text-anchor="middle" font-size="18" fill="#202d35"><tspan x="350" dy="0">Fast activity（较快活动）：输入变，u / v / y 随之变</tspan></text><rect x="15" y="55" width="185" height="80" rx="10" fill="#edf5f1" stroke="#9dbbb3"></rect><text x="107.5" y="87.5" text-anchor="middle" font-size="17" fill="#202d35"><tspan x="107.5" dy="0">水果 A</tspan><tspan x="107.5" dy="27">x → u → v → y</tspan></text><path d="M202 95 H255" fill="none" stroke="#17645b" stroke-width="2" marker-end="url(#w01-svg3-timescales-arrow)"></path><rect x="257" y="55" width="185" height="80" rx="10" fill="#edf5f1" stroke="#9dbbb3"></rect><text x="349.5" y="87.5" text-anchor="middle" font-size="17" fill="#202d35"><tspan x="349.5" dy="0">水果 B</tspan><tspan x="349.5" dy="27">x → u → v → y</tspan></text><path d="M444 95 H495" fill="none" stroke="#17645b" stroke-width="2" marker-end="url(#w01-svg3-timescales-arrow)"></path><rect x="497" y="55" width="185" height="80" rx="10" fill="#edf5f1" stroke="#9dbbb3"></rect><text x="589.5" y="87.5" text-anchor="middle" font-size="17" fill="#202d35"><tspan x="589.5" dy="0">水果 C …</tspan><tspan x="589.5" dy="27">x → u → v → y</tspan></text><path d="M20 149 V160 H680 V149" fill="none" stroke="#9dbbb3" stroke-width="2"></path><text x="350" y="188" text-anchor="middle" font-size="18" fill="#202d35"><tspan x="350" dy="0">这一段运行固定同一组权重 wₖ</tspan></text><rect x="35" y="246" width="185" height="80" rx="10" fill="#edf5f1" stroke="#9dbbb3"></rect><text x="127.5" y="278.5" text-anchor="middle" font-size="17" fill="#202d35"><tspan x="127.5" dy="0">当前参数 wₖ</tspan><tspan x="127.5" dy="27">较持久的关系</tspan></text><path d="M222 286 H256" fill="none" stroke="#17645b" stroke-width="2" marker-end="url(#w01-svg3-timescales-arrow)"></path><rect x="259" y="246" width="182" height="80" rx="10" fill="#edf5f1" stroke="#9dbbb3"></rect><text x="350.0" y="278.5" text-anchor="middle" font-size="17" fill="#202d35"><tspan x="350.0" dy="0">评价 + 学习</tspan><tspan x="350.0" dy="27">E 与 L</tspan></text><path d="M443 286 H477" fill="none" stroke="#17645b" stroke-width="2" marker-end="url(#w01-svg3-timescales-arrow)"></path><rect x="480" y="246" width="185" height="80" rx="10" fill="#edf5f1" stroke="#9dbbb3"></rect><text x="572.5" y="278.5" text-anchor="middle" font-size="17" fill="#202d35"><tspan x="572.5" dy="0">新参数 wₖ₊₁</tspan><tspan x="572.5" dy="27">用于之后的输入</tspan></text><text x="350" y="359" text-anchor="middle" font-size="18" fill="#202d35"><tspan x="350" dy="0">Slow adaptation（较慢适应）：训练改变权重</tspan></text></svg></div><figcaption>图3 · 双时间尺度教学示意图，依据主课件实际第40–41页。箭头未按真实时长比例绘制；白天/夜间或具体秒数不是该框架的固定要求。<span class="scroll-hint">窄屏阅读时，可在图内左右滑动。</span></figcaption></figure>
+<p>课件把较快的神经元活动称为 Short-term memory（短期记忆），把较慢的连接变化称为 Long-term memory（长期记忆）。这是该动力学框架中“暂态信息与较持久参数”的解释，不等同于生物心理学中的全部记忆机制，也不表示一个普通前馈网络天然记得上一枚水果。</p>
+<p>“快、慢”指相对于所讨论模型的典型时间尺度，不能当作每一套实现的固定秒数。某些系统边运行边训练，二者也可能交织。即使如此，仍应在每一步分清：当前改的是状态还是参数。对循环网络，还可能在权重固定时多次更新状态，直到满足停止或稳定条件；这些状态迭代本身不等于权重学习。</p>
+<p class="source">原资料：<a href="Lecture_slides_full%20semester.pdf#page=41">Lecture_slides_full semester.pdf，PDF实际第41页</a>；教学示意图与模型适用边界为补充解释。</p>
+</section>
+<section>
+<h2 id="categories">8 · 网络分类：每次只问一个维度</h2>
+<p>网络可以同时拥有多个标签。例如，本教材的水果模型是确定性、前馈、按加权和聚合、用监督信息选择参数的网络。这些标签回答不同问题，不是一张四选一的清单。</p>
+<h3 id="deterministic">Deterministic（确定性）与 Stochastic（随机性）：固定条件后响应是否唯一</h3>
+<div class="importance"><span class="rating">重要性：★★★☆☆ · 3/5 理解支撑</span><span>理由：能识别随机性的来源，避免把有小数的输出误当成随机输出。</span></div>
+<p>按课件第 42 页的划分，这一轴关注 F。确定性 F 在给定同样净输入时给出同样激活。我们的饱和线性函数在输入 0.64 时总输出 0.64，虽然结果是小数，仍是确定性的。</p>
+<p>随机性 F 可以规定一个输出分布，再从中抽样。教学上可想象：给定同一输入，节点以 0.64 的概率输出 1、以 0.36 的概率输出 0；重复运行可能得到不同结果。这里两个概率相加为 1，描述两种可能输出。此例仅用于解释随机响应，不替换全文的确定性水果模型。</p>
+<p>训练时随机选样本，与运行时激活随机，是两件事。一个前向激活完全确定的模型，仍可能用随机训练过程；分类时必须说明在说哪一种随机性。</p>
+<p class="source">原资料：<a href="Lecture_slides_full%20semester.pdf#page=42">Lecture_slides_full semester.pdf，PDF实际第42页</a>；概率示例为教学补充。</p>
+<h3 id="feedforward">Feedforward（前馈）与 Recurrent（循环）：信号是否沿连接返回</h3>
+<div class="importance"><span class="rating">重要性：★★★★☆ · 4/5 重要方法</span><span>理由：连接中有无反馈，会改变计算顺序以及是否需要保存状态。</span></div>
+<p>前馈网络沿有向连接向前传递信号，不沿路径回到已经经过的节点。本例输入节点 → 节点 3 → 输出，顺序明确。循环网络则有反馈路径：一个节点的响应经连接返回自己或前面的节点，使先前状态能够影响后续计算。</p>
+<p>因此相同的外部输入在不同历史状态下，循环网络可能输出不同结果；必须说明初始状态及更新方式。前馈模型的多层并不等于循环：层数再多，只要运行连接没有环，仍然可以前馈。反过来，循环也不意味着参数一定在学习——固定权重下状态仍可持续变化。</p>
+<p>课件将这一轴关联 G 与 H，因为聚合需要知道信号来自何处，读出需要知道采用哪些状态。在实际定义中应同时检查连接图与时间依赖。上一章“误差反馈给训练过程”的箭头只改变参数，不自动使前向网络成为循环网络。</p>
+<p class="source">原资料：<a href="Lecture_slides_full%20semester.pdf#page=37">Lecture_slides_full semester.pdf，PDF实际第37、41–42页</a>；<a href="course_files_export/ASSPM-Lippmann1987.pdf#page=1">course_files_export/ASSPM-Lippmann1987.pdf，PDF实际第1–3页</a>。结构与训练回路的区分为教学补充。</p>
+<h3 id="semilinear">Semilinear（半线性）与 Higher-order（高阶）：聚合是否包含输入间的乘积</h3>
+<div class="importance"><span class="rating">重要性：★★★☆☆ · 3/5 理解支撑</span><span>理由：识别 G 的形式，才能知道非线性来自聚合还是激活。</span></div>
+<p>在本课语境中，半线性单元常把加权和作为聚合，再接激活函数；这并不表示整个网络必定是线性的。高阶聚合则可包含输入之间的乘积，使一个输入的作用依赖于另一个输入。</p>
+<div class="math-display"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block" aria-label="普通加权和与增加a12 x1 x2交互项的高阶聚合对照"><mtable columnalign="left"><mtr><mtd><mrow><msub><mi>u</mi><mtext>加权和</mtext></msub><mo>=</mo><msub><mi>a</mi><mn>1</mn></msub><msub><mi>x</mi><mn>1</mn></msub><mo>+</mo><msub><mi>a</mi><mn>2</mn></msub><msub><mi>x</mi><mn>2</mn></msub></mrow></mtd></mtr><mtr><mtd><mrow><msub><mi>u</mi><mtext>含交互项</mtext></msub><mo>=</mo><msub><mi>a</mi><mn>1</mn></msub><msub><mi>x</mi><mn>1</mn></msub><mo>+</mo><msub><mi>a</mi><mn>2</mn></msub><msub><mi>x</mi><mn>2</mn></msub><mo>+</mo><msub><mi>a</mi><mn>12</mn></msub><msub><mi>x</mi><mn>1</mn></msub><msub><mi>x</mi><mn>2</mn></msub></mrow></mtd></mtr></mtable></math></div>
+<p>这两个式子只是教学对照：a<sub>1</sub>、a<sub>2</sub> 是单独输入项的权重；a<sub>12</sub> 是交互项 x<sub>1</sub>x<sub>2</sub> 的权重，所有量在本例中都是无量纲标量。第二式有三个参数，第一个式子只有两个；它不是本教材贯穿模型偷偷增加的第三个权重。</p>
+<div class="worked-example"><span class="callout-title">教学示例 · 交互项多做了什么</span><p>取 x=(0.8,0.2)，a<sub>1</sub>=0.6，a<sub>2</sub>=0.2，a<sub>12</sub>=0.5。基础加权和是 0.52；交互项为 0.5×0.8×0.2=0.08；高阶聚合结果为 0.60。新增项看的是两个输入的共同出现，不只是各自独立贡献。引入它是否值得，还需要数据与任务依据。</p></div>
+<p>“高阶聚合”描述单个聚合表达式中的交互形式，不等于“隐藏层更多”。深度与聚合阶数是不同的设计轴。</p>
+<p class="source">原资料分类轴：<a href="Lecture_slides_full%20semester.pdf#page=42">Lecture_slides_full semester.pdf，PDF实际第42页</a>；具体多项式和计算为教学补充。</p>
+<h3 id="taxonomy">Taxonomy（分类体系）：输入形式、学习信息与实现并非同一件事</h3>
+<div class="importance"><span class="rating">重要性：★★★☆☆ · 3/5 理解支撑</span><span>理由：读懂分类图的划分标准，比把网络名称机械分组更可迁移。</span></div>
+<p>第四个课件分类轴是 supervised / unsupervised，关注 L 所利用的训练信息，详见<a href="#supervision">监督学习一节</a>。Lippmann 第 3 页 Fig. 3 还展示另一层：Binary input（二值输入）与 Continuous-valued input（连续值输入）。本例是连续值输入；即使最终判定只有 0/1，也不因此变成二值输入网络。</p>
+<p>该图把 Hopfield、Hamming、Carpenter/Grossberg classifier、Perceptron、Multi-layer perceptron、Kohonen self-organizing feature maps 放在当时六种静态模式网络的框架中。底部的传统分类或聚类方法用于说明相似功能，不表示连接图长得像某方法就必定执行完全相同的算法。第 4 页明确提醒：有的对应是特定条件下实现相同计算，有的只是解决相近任务。</p>
+<p>例如，从输入得到每一类的 Matching score（匹配分数），再选择最大者，是 Lippmann 比较传统与神经分类器的共同结构。传统实现也可以从训练数据估计参数；神经实现也可以在部署时保持权重固定。因此“传统分类器不会学习”“神经网络使用时一定学习”“神经网络必然是模拟硬件”都不是这幅 1987 年对照图能够支持的普遍结论。</p>
+<p>论文对模拟并行硬件、分布假设和适应性的论述，应放回其时代和比较对象。特别是其中 non-parametric（非参数）的用语并不表示网络没有可训练权重；本周不将它扩写成所有现代网络的统计学分类结论。</p>
+<h4 id="vector-quantization">Vector quantization（向量量化）：用少数代表描述许多输入</h4>
+<div class="importance"><span class="rating">重要性：★★★☆☆ · 3/5 理解支撑</span><span>理由：这个任务说明无标签学习的输出也可能是简化表示，而不是“合格 / 不合格”答案。</span></div>
+<p>Lippmann 把向量量化与 Clustering（聚类）列作第三类用途。聚类侧重把相似输入分组；向量量化进一步用有限个 Representative vectors（代表向量）近似表示输入，存储或传送时可以使用代表的编号。两者联系紧密，但“得到分组”与“怎样编码和重建输入”是不同关注点。</p>
+<div class="worked-example"><span class="callout-title">教学补充 · 两个水果共用一个代表</span><p>沿用 A=(0.8,0.2) 与 C=(0.7,0.3)。为说明压缩，手工选一个二维代表 (0.75,0.25)：第一项为 (0.8+0.7)/2=0.75，第二项为 (0.2+0.3)/2=0.25。若两者都用编号 1 表示，接收端查表时都恢复为这个代表，因而无法再区分原来是 A 还是 C。A 的两个坐标分别少了 0.05、多了 0.05；C 恰好相反。</p><p>这个编号不表示“合格类别 1”，只是代表表里的位置。这样可能减少需要传输的信息，但会损失细节；实际是否节省存储，还取决于原始精度、样本数和代表表开销。本例只建立直觉，不演示自动求代表的训练算法。</p></div>
+<p class="source">任务依据 <a href="course_files_export/ASSPM-Lippmann1987.pdf#page=3">course_files_export/ASSPM-Lippmann1987.pdf，PDF实际第3页</a> 的向量量化与聚类段落；均值代表、编号与误差说明为教学补充。</p>
+<div class="checkpoint"><strong>理解检查 3</strong><p>某网络的输入是实数，输出为 0/1；权重每处理十个样本更新一次；运行连接没有环；训练提供正确标签。它是否一定是“连续时间、无监督、循环网络”？</p><details><summary>查看答案与解释</summary><div class="answer"><p>不是。实数输入只说明输入取值形式；每十个样本更新一次是离散更新；连接无环说明它是前馈；训练有目标标签说明是监督学习。输出二值不能决定上述任何一个标签。激活是否随机仍需另外说明。</p></div></details></div>
+<p class="source">原资料：<a href="Lecture_slides_full%20semester.pdf#page=42">Lecture_slides_full semester.pdf，PDF实际第42页</a>；<a href="course_files_export/ASSPM-Lippmann1987.pdf#page=2">course_files_export/ASSPM-Lippmann1987.pdf，PDF实际第2–4页，Fig. 2–3 与 A taxonomy of neural nets</a>。未采用 The Hopfield Net 正文的算法。</p>
+</section>
+<section>
+<h2 id="properties">9 · 八项网络性质：能力从哪里来，边界在哪里</h2>
+<p>课件最后一页列出八项性质。正确的读法是把它们看作设计潜力与分析视角：实际是否具备、具备到何种程度，取决于结构、规则、数据和实现。下面逐项连接到已经算过的例子。</p>
+<h3 id="nonlinearity">Nonlinearity（非线性）</h3>
+<div class="importance"><span class="rating">重要性：★★★★★ · 5/5 核心基础</span><span>理由：非线性变换是网络表达复杂输入输出关系的重要来源。</span></div>
+<p>如果每层始终只是线性组合，叠加后的整体仍是线性组合；单纯增加这类层不会自动产生任意复杂关系。非线性激活改变了这个限制：例如本例净输入从 0.5 增到 1 时，输出增加 0.5；从 1 增到 1.5 时，输出却增加 0，因为已饱和。相同输入增量不再总产生相同比例的输出增量。</p><p>这是一种表达能力，而不是“加了非线性就必然分类正确”。我们的小模型在四个训练样本上都落于中间线性段，因此这次计算并没有发挥饱和区的复杂表达作用；模型能否解决实际任务仍须检验。</p>
+<p class="source">原资料：<a href="Lecture_slides_full%20semester.pdf#page=35">Lecture_slides_full semester.pdf，PDF实际第35、45页</a>；解释与边界为教学补充。</p>
+<h3 id="io-property">Input-output mapping（输入输出映射）</h3>
+<div class="importance"><span class="rating">重要性：★★★★★ · 5/5 核心基础</span><span>理由：模型最终要对新输入产生可用输出，这连接结构、训练与实际任务。</span></div>
+<p>训练使某个模型形成特定映射，例如输入两项水果指标，输出合格分数。训练后的权重固定为 (0.8,0) 时，A 与 Q 会得到各自输出，模型不必为每个可能输入单独存一条答案。</p><p>映射的可用范围受表示与数据限制：若真实质量取决于内部腐坏，而两个输入都看不到它，仅靠这两个输入就可能无法可靠区分。输入输出映射不是“所有信息都能从现有输入恢复”的保证。</p>
+<p class="source">原资料：<a href="Lecture_slides_full%20semester.pdf#page=34">Lecture_slides_full semester.pdf，PDF实际第34、37、45页</a>；输入遗漏的示例为教学补充。</p>
+<h3 id="adaptivity-property">Adaptivity（适应性）</h3>
+<div class="importance"><span class="rating">重要性：★★★★☆ · 4/5 重要方法</span><span>理由：可调整参数使系统能改善，但改善需要合适反馈与评价。</span></div>
+<p>权重能够改变，是网络适应的基础。我们的训练步骤用评价选择了不同的权重，让 C 的类别改变；若环境改变，也可能用新数据再次调整。</p><p>但部署时关闭训练，权重就不会因为“见过了很多新水果”自动进步；错误标签或不合适的目标还可能让新参数变差。因此应分别说“模型可适应”“正在执行适应”“已验证适应有效”，三者不是同一个事实。</p>
+<p class="source">原资料：<a href="Lecture_slides_full%20semester.pdf#page=36">Lecture_slides_full semester.pdf，PDF实际第36、38、45页</a>；状态区分为教学补充。</p>
+<h3 id="context-property">Contextual information（上下文信息）</h3>
+<div class="importance"><span class="rating">重要性：★★★☆☆ · 3/5 理解支撑</span><span>理由：判断一个输入时，关联信息可能决定如何解释它。</span></div>
+<p>同样的颜色值可能来自不同照明或不同品种。如果系统能接收这些相关信息，就可能作出更合适的判断。多节点连接能组合不同位置或通道的信息；带状态的网络还可以使历史影响当前响应。</p><p>上下文不是凭空出现的。当前水果模型只有两项输入，也没有保留前一枚水果的状态，因此它不知道光源、品种或批次。要使用这些信息，需要把它们以合适形式提供给模型，或采用能保留相关状态的结构。</p>
+<p class="source">原资料性质：<a href="Lecture_slides_full%20semester.pdf#page=45">Lecture_slides_full semester.pdf，PDF实际第45页</a>；上下文的具体含义与反例为教学补充。</p>
+<h3 id="fault-tolerance">Fault tolerance（容错性）</h3>
+<div class="importance"><span class="rating">重要性：★★★★☆ · 4/5 重要方法</span><span>理由：这是常被过度承诺的性质，必须结合损坏类型与结构验证。</span></div>
+<p>多个节点和连接共同表示知识时，少量局部损坏有时只使性能逐渐下降，而不是全系统立即停止。Lippmann 将这种潜力与分布式连接联系起来。</p><p>它有条件：本教材只有一条当前起作用的输入连接和一个主要计算节点，删掉关键部分就可能让分类失效。冗余程度、损坏位置和训练方式都会影响后果。容错也不等于抵御所有输入扰动，更不等于结论不会出错；必须明确在测试哪一种故障。</p>
+<p class="source">原资料：<a href="Lecture_slides_full%20semester.pdf#page=45">Lecture_slides_full semester.pdf，PDF实际第45页</a>；<a href="course_files_export/ASSPM-Lippmann1987.pdf#page=1">course_files_export/ASSPM-Lippmann1987.pdf，PDF实际第1页</a>。关键节点反例为教学补充。</p>
+<h3 id="hardware-property">Hardware implementability（硬件可实现性）</h3>
+<div class="importance"><span class="rating">重要性：★★★☆☆ · 3/5 理解支撑</span><span>理由：了解局部重复计算如何落地，有助于理解并行处理的动机。</span></div>
+<p>大量重复的乘加、局部连接和激活运算适合形成规则化实现。不同节点的独立计算有机会并行进行；1987 年论文特别关注模拟 VLSI（超大规模集成电路）及并行处理。</p><p>但结构上可并行不等于任何程序都会更快。数据传输、存储、精度、硬件资源和节点依赖都会限制速度。网络也可以在普通数字计算机上模拟运行，因此“神经计算”不是和“数字计算”互斥的设备种类。</p>
+<p class="source">原资料：<a href="Lecture_slides_full%20semester.pdf#page=45">Lecture_slides_full semester.pdf，PDF实际第45页</a>；<a href="course_files_export/ASSPM-Lippmann1987.pdf#page=1">course_files_export/ASSPM-Lippmann1987.pdf，PDF实际第1–3页</a>。实现条件为教学补充。</p>
+<h3 id="uniformity-property">Uniformity of analysis and design（分析与设计的统一性）</h3>
+<div class="importance"><span class="rating">重要性：★★★★☆ · 4/5 重要方法</span><span>理由：统一框架让你能比较新网络，辨认究竟改了哪一部分。</span></div>
+<p>不同网络名称背后都可以追问 ARCH 与 E/F/G/H/L：一个模型可能只换 F，另一个改变反馈连接，还有一个更换学习目标。使用共同语言，能够把“全新模型”拆成可比较的局部选择。</p><p>统一的是提问方式，不是证明与训练保证。某个模型的收敛条件、损失函数或稳定性结论不能不加检查地搬给另一个模型。本周得到的是分析接口；后续每种方法仍有自己的假设与适用范围。</p>
+<p class="source">原资料：<a href="Lecture_slides_full%20semester.pdf#page=33">Lecture_slides_full semester.pdf，PDF实际第33–37、45页</a>；解释为教学补充。</p>
+<h3 id="biological-property">Neurobiological analogy and plausibility（神经生物学类比与合理性）</h3>
+<div class="importance"><span class="rating">重要性：★★★☆☆ · 3/5 理解支撑</span><span>理由：理解生物启发的价值，同时避免把工程模型误当作完整脑科学解释。</span></div>
+<p>节点、连接、活动状态与连接可塑性受生物神经系统启发。这样一种局部单元相互作用的视角，可以促成新的计算结构，而不必由单一中央规则逐项处理所有信息。</p><p>类比有边界：本例的节点没有细胞、化学递质或真实放电过程；人为给定的目标函数和训练方式也未因此获得生物真实性。课件第 35 页列出约 10<sup>10</sup>–10<sup>11</sup> 的生物神经元数量级，作用是提示规模差异，不是本周模型设计所需的精确常数。工程上有用与生物机制完全一致，是两个不同判断。</p>
+<p class="source">原资料：<a href="Lecture_slides_full%20semester.pdf#page=31">Lecture_slides_full semester.pdf，PDF实际第31、35、44–45页</a>；<a href="course_files_export/ASSPM-Lippmann1987.pdf#page=1">course_files_export/ASSPM-Lippmann1987.pdf，PDF实际第1页</a>。类比边界为教学澄清。</p>
+<p class="chapter-bridge">你现在应能对每项性质回答：“由什么结构或规则支持？缺少什么条件时可能失效？”最后用几道变化不大的题，把这些判断与计算连接起来。</p>
+</section>
+<section>
+<h2 id="practice">10 · 综合练习与讲解答案</h2>
+<p>以下均为<strong>教学补充练习</strong>。先独立写出中间步骤，再展开答案。题目只使用本教材已讲知识；默认沿用三节点水果模型、饱和线性激活、H 选第三个节点，以及 0.5 的类别界限。</p>
+<h3 id="practice-calculate">练习 A · 从数据到评价，完整算一遍</h3>
+<div class="importance"><span class="rating">重要性：★★★★★ · 5/5 核心基础</span><span>理由：检验能否把 G、F、H、E 分开执行，并核对结果含义。</span></div>
+<div class="checkpoint"><p>给定 x=(0.9,0.1)，d=1，权重仍为初始的 (0.6,0.2)。求 u、v、y、预测类别 ĉ、残差 e 和单样本 E。然后改用学习后的 (0.8,0)，比较结果。</p><details><summary>提示与完整答案</summary><div class="answer"><p>先处理输入节点：u<sub>1</sub>=v<sub>1</sub>=0.9，u<sub>2</sub>=v<sub>2</sub>=0.1。初始净输入 u<sub>3</sub>=0.6×0.9+0.2×0.1=0.54+0.02=0.56。它落在 [0,1]，激活不改变它。</p><p>所以 u=v=(0.9,0.1,0.56)，y=0.56，ĉ=1。残差 e=1−0.56=0.44，E=0.44²/2=0.0968。</p><p>新权重下，u<sub>3</sub>=0.8×0.9+0×0.1=0.72；u=v=(0.9,0.1,0.72)，y=0.72，ĉ仍为1。残差0.28，E=0.0392。类别同样正确，但分数更接近目标，平方误差下降。只报“两个都正确”会丢掉 E 衡量的信息。</p></div></details></div>
+<h3 id="practice-activation">练习 B · 不要把净输入直接当作输出</h3>
+<div class="importance"><span class="rating">重要性：★★★★☆ · 4/5 重要方法</span><span>理由：在激活的另一段计算，检验是否只记住了前例中 u=v 的巧合。</span></div>
+<div class="checkpoint"><p>教学变化：令 x=(0.9,0.6)，权重 (1.2,0.8)，d=1，其余规则保持不变。求 u<sub>3</sub>、v<sub>3</sub>、y 与 E。若误把净输入作为最终分数，会得到什么错误结果？</p><details><summary>查看完整答案</summary><div class="answer"><p>聚合为 1.2×0.9+0.8×0.6=1.08+0.48=1.56。由于超过1，激活输出v<sub>3</sub>=1；H给出y=1；E=(1−1)²/2=0。</p><p>误把u<sub>3</sub>=1.56当y，会算出(1−1.56)²/2=0.1568，评价的已是另一套模型。这里新权重只是题设，并不表示它比上一章在整个数据集上更好。</p></div></details></div>
+<h3 id="practice-update">练习 C · 更新量、更新后数值和变化率</h3>
+<div class="importance"><span class="rating">重要性：★★★★☆ · 4/5 重要方法</span><span>理由：检查是否把第 37、40 页不同作用的 L 混在一起。</span></div>
+<div class="checkpoint"><p>当前w=(0.8,0)。一次离散学习返回Δw=(−0.1,0.05)，新w是多少？另一套连续模型给出的变化率为(−0.1,0.05)每时间单位，若恒定持续0.2时间单位，新w又是多少？</p><details><summary>查看完整答案</summary><div class="answer"><p>离散更新直接相加：(0.8−0.1,0+0.05)=(0.7,0.05)。</p><p>连续模型先求变化量：0.2×(−0.1,0.05)=(−0.02,0.01)，再相加得(0.78,0.01)。两个结果不同，因为一个向量表示整次增量，另一个表示每时间单位的速率。若变化率在区间内不恒定，就不能把起点速率乘整个区间当作精确结果。</p></div></details></div>
+<h3 id="practice-structure">练习 D · 检查结构、维度和学习信息</h3>
+<div class="importance"><span class="rating">重要性：★★★★★ · 5/5 核心基础</span><span>理由：把符号当成有明确对象的量，而不是记忆字母表。</span></div>
+<div class="checkpoint"><p>仍沿用输入节点计入N的约定。现在有2个输入节点和2个计算输出节点，每个输入节点都连接到每个输出节点，输出直接选两个计算节点的状态。没有其他连接或偏置。求N、M、n、m，以及u、v、w、x、y的维度。若这是一个监督任务，还需提供什么？</p><details><summary>查看完整答案</summary><div class="answer"><p>N=4，因为共4个节点；M=4，因为每个输入各发出2条连接，共2×2=4条；n=2，m=2。于是u、v各4维，w为4维，x、y各2维。</p><p>监督学习还需要与输出含义一致的目标，例如一个2维目标向量d，以及明确的评价和学习规则。节点数、权重数和类别数不能只因某个例子里恰好相同就视作同一概念。</p></div></details></div>
+<h3 id="practice-interpret">练习 E · 判断一句话缺少了什么条件</h3>
+<div class="importance"><span class="rating">重要性：★★★★☆ · 4/5 重要方法</span><span>理由：能说明不成立的原因，比只回答“对或错”更能检验理解。</span></div>
+<div class="checkpoint"><ol><li>“模型输出0.8，所以对象有80%的概率合格。”</li><li>“运行时有误差信息返回训练程序，所以网络必定是recurrent。”</li><li>“无监督聚类得到第1组和第2组，因此系统已经知道哪组合格。”</li><li>“神经网络有容错性，所以去掉任何一个节点都不影响结果。”</li><li>“现代AI包含神经网络，所以旧课件AI/CI对比的每一句都可以照搬为当前定义。”</li></ol><details><summary>查看逐项解释</summary><div class="answer"><ol><li>缺少概率建模与校准依据。一个落在0–1的激活分数不自动是可靠概率。</li><li>混淆训练流程和前向运行连接；只有检查运行图与状态依赖，才能判断有无循环反馈。</li><li>缺少组别与业务标签之间的解释。无监督只揭示按所选标准形成的结构。</li><li>把条件性潜力夸大为保证；删掉关键节点可能使系统失效。</li><li>混淆历史修辞与通行范围。应保留“适应性很重要”的讨论，同时说明广义AI与CI方法存在包含和交叠关系。</li></ol></div></details></div>
+<h3 id="practice-design">练习 F · 用统一框架解释一个稍有变化的系统</h3>
+<div class="importance"><span class="rating">重要性：★★★★★ · 5/5 核心基础</span><span>理由：这是本周最终迁移任务：从背概念转到分析系统。</span></div>
+<div class="checkpoint"><p>分拣线新增了“光照强度”输入，并在每晚得到当天水果的复检标签。系统计划白天固定参数分拣，晚上根据新样本改善模型。用ARCH/RULE解释至少需要说明哪些内容；为什么晚上训练不意味着白天的前向网络是循环网络？</p><details><summary>查看讲解答案</summary><div class="answer"><p><strong>先改表示：</strong>x新增光照特征，n从2变为3。需要说明缩放方式、它连到哪些节点、是否新增权重；N和M不能在未给连接图时直接断言。y仍可以是一个合格分数，也可以重新定义，但必须写清含义。</p><p><strong>再写规则：</strong>G说明光照怎样参与聚合；F规定各节点的激活；H把内部状态读成输出；E利用晚间复检标签评价模型；L规定怎样调整参数及何时停止。白天执行G/F/H，参数保持固定；晚上才用数据、标签及E/L更新参数。</p><p><strong>最后评价：</strong>检查新光照条件下、未用于选参数的数据表现，避免只看训练集。白天的前向网络是否循环，取决于运行连接和状态依赖；夜间重新训练这件事本身不能决定它。这样的说明已使用本周框架，无需推导BP或其他后续算法。</p></div></details></div>
+<p class="source">练习对应 <a href="Lecture_slides_full%20semester.pdf#page=33">Lecture_slides_full semester.pdf，PDF实际第33–45页</a>，全部题设、数值和解析为教学补充，不是原题答案。</p>
+</section>
+<section>
+<h2 id="sources">来源索引、覆盖范围与资料限制</h2>
+<p>以下是查回原资料的入口。表中页码全部是 PDF 实际页序；例如 Lippmann 文件的实际第 1 页印刷页码为 4，两者没有混用。外部核验链接已放在相邻知识块，核验日期为 2026-10-09；它们用于澄清具体事实，不表示本课程已讲授那些外部材料的全部内容。</p>
+<div class="table-wrap"><table><caption>采用资料及自然主题覆盖</caption><thead><tr><th>文件 / 实际页序</th><th>采用内容</th><th>教材位置</th></tr></thead><tbody><tr><td><a href="Lecture_slides_full%20semester.pdf#page=1">Lecture_slides_full semester.pdf，PDF实际第1–6页</a></td><td>目标、关键词、大纲、参考书；封面仅作课程身份。</td><td><a href="#course-map">课程地图</a></td></tr><tr><td><a href="Lecture_slides_full%20semester.pdf#page=7">Lecture_slides_full semester.pdf，PDF实际第7–9页</a></td><td>智能、系统、推理、学习适应与规划设计。</td><td><a href="#intelligence">第2章</a></td></tr><tr><td><a href="Lecture_slides_full%20semester.pdf#page=10">Lecture_slides_full semester.pdf，PDF实际第10–23页</a></td><td>历史、人物与应用；图片、报刊按时代与证据边界处理。</td><td><a href="#history">第4章</a></td></tr><tr><td><a href="Lecture_slides_full%20semester.pdf#page=24">Lecture_slides_full semester.pdf，PDF实际第24–30页</a></td><td>CI、AI/CI对照、hard/soft computing及三方法交叠。</td><td><a href="#approaches">第3章</a></td></tr><tr><td><a href="Lecture_slides_full%20semester.pdf#page=31">Lecture_slides_full semester.pdf，PDF实际第31–37页</a></td><td>节点、连接、权重、ARCH、五条RULE。</td><td><a href="#ann-architecture">第5章</a>、<a href="#rules">第6章</a></td></tr><tr><td><a href="Lecture_slides_full%20semester.pdf#page=38">Lecture_slides_full semester.pdf，PDF实际第38–42页</a></td><td>学习、一般更新、双时间尺度、分类轴；第39页引语出处未确认，不作为定义。</td><td><a href="#learning-dynamics">第7章</a>、<a href="#categories">第8章</a></td></tr><tr><td><a href="Lecture_slides_full%20semester.pdf#page=43">Lecture_slides_full semester.pdf，PDF实际第43–45页</a></td><td>经验知识、分布式表示与八项性质。</td><td><a href="#ann">第5章</a>、<a href="#properties">第9章</a></td></tr><tr><td><a href="course_files_export/Tutorials/Tutorial%201.pdf#page=1">course_files_export/Tutorials/Tutorial 1.pdf，PDF实际第1–39页</a></td><td>完整阅读；定义、历史与应用融入对应主题；第7、11、17–21、24、28、31页的算法图只取本周概念层意义，不展开推导；第1、35、39页为封面、分隔或结束页。</td><td><a href="#intelligence">第2章</a>至<a href="#history">第4章</a>；局部背景见第5、8章。</td></tr><tr><td><a href="course_files_export/CS5486-2026.pdf#page=1">course_files_export/CS5486-2026.pdf，PDF实际第1–2页</a></td><td>确认课程目标、范围与参考书；不扩写联系方式、行政要求或编造周课表。</td><td><a href="#start">范围说明</a>、<a href="#course-map">课程地图</a></td></tr><tr><td><a href="course_files_export/ASSPM-Lippmann1987.pdf#page=1">course_files_export/ASSPM-Lippmann1987.pdf，PDF实际第1–4页</a></td><td>Introduction、Neural net and traditional classifiers、A taxonomy of neural nets；Fig.1–3已读；止于第4页“The Hopfield Net”正文之前，不采用其后算法与Fig.4–5。</td><td><a href="#applications">任务类型</a>、<a href="#ann-architecture">结构</a>、<a href="#supervision">监督信息</a>、<a href="#taxonomy">分类图</a>与性质。</td></tr><tr><td><a href="course_files_export/Nature1986.pdf#page=1">course_files_export/Nature1986.pdf，实际第1页</a></td><td>只用相关论文题头核对1986年文章作者和年份；同页前一篇文章尾部及BP正文均不纳入本周。</td><td><a href="#milestones">历史核验</a></td></tr></tbody></table></div>
+<p><strong>递归盘点后的其余文件：</strong>本次初始盘点共发现10份PDF、1份提示词文件、1个空锁文件及2个系统元数据文件。没有发现课堂转录、音视频、数据集、代码或压缩包。文件成功被扫描不等于全文采用；下表说明其余候选为何不进入本周事实来源。</p>
+<div class="table-wrap"><table><thead><tr><th>相对路径</th><th>内容判断与处理</th></tr></thead><tbody><tr><td>course_files_export/CS-Broomhead-Lowe1988.pdf</td><td>已查摘要及导论，主题为多变量插值与自适应网络，属后续RBF等内容；本周不采用其推导。</td></tr><tr><td>course_files_export/TLU.pdf</td><td>已查开头定义与结构，主题为Threshold Logic Units；超出本周止界。</td></tr><tr><td>course_files_export/Tutorials/Tutorial 2- M-P neuron.pdf</td><td>已查内容结构，涉及M-P模型与逻辑运算；留待后续。</td></tr><tr><td>course_files_export/Tutorials/Perceptron_Adaline.pdf</td><td>已查标题和学习章节，包含感知机与Adaline训练；留待后续。</td></tr><tr><td>course_files_export/Tutorials/Tutorial 7 - SVM and LS-SVM_1.pdf</td><td>已查大纲，涉及间隔、对偶、核、SVM与LS-SVM；本周不采用。</td></tr><tr><td>CS5486-12周教材生成提示词.txt</td><td>任务提示，不作为独立事实来源。</td></tr><tr><td>.writer.lock；.DS_Store；course_files_export/.DS_Store</td><td>空锁文件与操作系统元数据，排除。</td></tr></tbody></table></div>
+<div class="callout"><span class="callout-title">需保留的限制与校正</span><ul><li><strong>引语：</strong>主课件第26页Folger、第28页Zadeh、第39页归于Confucius的逐字语句，缺少足够的一手定位；不以人物权威支持教学结论。第39页不承担学习机制定义。</li><li><strong>历史：</strong>姓名、Dartmouth提案年份、模糊集合论文、Kohonen论文、BP作者链等已在正文明确澄清；发展年代列表不作为完整首创权证明。热潮/寒冬的分段是教程的概括，而非所有地区同步发生的严格界限。</li><li><strong>新闻：</strong>主课件第10、22、23页的旧新闻只作当时报道或愿景的例子；第22页缺乏足够日期和实验细节，不将其技术承诺写成已验证能力。</li><li><strong>时效性：</strong>Tutorial第31页引用次数、第32页产品模型清单与日期、第34页未来预测不作为当前事实。已读并排除不能可靠确认的内容，不代表未阅读这些页。</li><li><strong>扫描质量：</strong>Lippmann前4页有严重文本提取遗漏，采用原页渲染核对。1987年的硬件与传统分类器对比保留语境，不改写成今天的普遍限制。</li><li><strong>书目：</strong>主课件第6页与课程说明第1页对Haykin 2009年第3版的书名写法不一致；本教材课程地图采用主课件的 <em>Neural Networks and Learning Machines</em>，不将两条记录拼成两本独立事实来源。未对所有参考书版本做书目校勘。</li><li><strong>符号：</strong>L在第37页与第40页的不同角色用“新权重映射 / 增量 / 变化率”拆开；监督目标d显式补出。数值示例、分段激活、候选搜索、前置解释和全部自绘图均明确属于教学补充。</li></ul></div>
+<p>本周的完成标准是能解释和复现本教材的分析过程。下一步进入具体神经元或训练算法时，先把它填入 ARCH/RULE，再检查新增的假设；本教材到主课件第45页结束。</p>
+</section>
+</article>
+      <footer class="book-footer">学习教材 · learning-notes</footer>
+    </main>
+  </div>
+
+
+</body></html>

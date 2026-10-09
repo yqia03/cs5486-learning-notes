@@ -1,0 +1,26 @@
+{
+  "name": "cs5486-learning-notes",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "import": "node scripts/import.mjs",
+    "build": "node scripts/build.mjs",
+    "preview": "node scripts/preview.mjs",
+    "check": "node scripts/check.mjs",
+    "test": "npm run build && npm run check",
+    "test:browser": "node scripts/browser-check.mjs",
+    "check:links": "node scripts/check-links.mjs"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "parse5": "^8.0.1",
+    "postcss": "^8.5.29"
+  },
+  "devDependencies": {
+    "playwright": "^1.64.0"
+  }
+}
