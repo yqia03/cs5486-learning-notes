@@ -50,4 +50,10 @@ GitHub Actions 在部署前使用 Node.js 24 重新构建，并运行内容验�
 - 独立复算SVR原始/对偶目标、偏置边界与退化反例、LS-SVM分类线性系统、ART完整候选次序、MAPE及输入维数；具体数值和未决内容见 [NEW_MATERIALS.md](NEW_MATERIALS.md)。
 - PDF原件、仓库外备份、提示词及测试产物未加入公开文件。代码许可与教材/第三方内容边界保持原样。
 
-本节记录本地已完成的检查；Actions与实际公网结果在部署后补记。
+### 本轮公网验收
+
+- 网站内容提交为 [`34928a1`](https://github.com/yqia03/cs5486-learning-notes/commit/34928a1ed509a6313f8671b578c7c8f7478ef15b)。[部署工作流](https://github.com/yqia03/cs5486-learning-notes/actions/runs/38743904017) 的构建、内容检查、Chromium验收与Pages部署全部成功。
+- 对真实 [GitHub Pages](https://yqia03.github.io/cs5486-learning-notes/) 再跑完整Chromium检查，92项全部通过，控制台错误和资源失败均为0；已实际点击新资料来源说明/回链、检查新内容搜索、答案和旧深层链接。
+- 线上首页、第05/06周、search-index.json、site-manifest.json均HTTP 200，下载字节的SHA-256与本地正式子路径构建完全一致。线上新增公式、分类系统和负荷特征表截图已查看。
+- GitHub API读取本次提交的公开树，共75个条目，无原始PDF、提示词、备份、node_modules、dist或output测试产物。原有未跟踪提示词仍留在本机且未暂存。
+- 先同步远端两笔README更新，保留其精简版及说明，再加入本轮资料路径和记录链接；未强推。本文公网验收记录单独使用 `[skip ci]` 提交，不改变上述已验证的网站内容。
