@@ -108,7 +108,7 @@ for (const [p, doc] of documents) {
 }
 await check('Search content and matching', async () => {
   const raw = await json('dist/search-index.json'), index = prepareIndex(raw);
-  assert.equal(new Set(raw.map(r => r.week)).size, 12);
+  assert.equal(new Set(raw.filter(r => r.kind !== 'topic').map(r => r.week)).size, 12);
   for (const query of ['感知机', 'SVM', 'svm', 'Hopfield', '隶属度', 'PSO']) assert(search(index, query).total > 0, `query has no results: ${query}`);
   assert.equal(search(index, 'SVM').total, search(index, 'svm').total);
   const chapterPreview = search(index, '感知机').results.find(r => r.href.endsWith('/weeks/02/#perceptron'));
@@ -122,7 +122,7 @@ await check('Search content and matching', async () => {
     const d = documents.get(path.join(root, 'dist', u.pathname.slice(site.base.length), 'index.html'));
     assert(d && all(d, n => attr(n, 'id') === decodeURIComponent(u.hash.slice(1))).length, 'search result target missing');
   }
-  const answers = raw.filter(r => r.title.startsWith('答案'));
+  const answers = raw.filter(r => r.kind !== 'topic' && r.title.startsWith('答案'));
   assert.equal(answers.length, totals.details, 'all collapsed answers must be indexed');
 });
 const report = { passed: failures.length === 0, pages: documents.size, links, totals, failures };

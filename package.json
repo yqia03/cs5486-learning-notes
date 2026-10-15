@@ -10,10 +10,11 @@
     "import": "node scripts/import.mjs",
     "build": "node scripts/build.mjs",
     "preview": "node scripts/preview.mjs",
-    "check": "node scripts/check.mjs",
+    "check": "node scripts/check-suite.mjs",
     "test": "npm run build && npm run check",
-    "test:browser": "node scripts/browser-check.mjs",
-    "check:links": "node scripts/check-links.mjs"
+    "test:browser": "node scripts/browser-suite.mjs",
+    "check:links": "node scripts/check-links.mjs",
+    "import:midterm": "node scripts/import-midterm.mjs"
   },
   "license": "MIT",
   "dependencies": {

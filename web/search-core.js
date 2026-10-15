@@ -23,7 +23,7 @@ export function search(index, query) {
     const offsets = terms.map(t => normalizedExcerpt.indexOf(t)).filter(p => p >= 0);
     const start = Math.max(0, (offsets.length ? Math.min(...offsets) : 0) - 45);
     const snippet = (start ? '…' : '') + excerpt.slice(start, start + 165) + (start + 165 < excerpt.length ? '…' : '');
-    matches.push({ week: record.week, weekTitle: record.weekTitle, title: record.title, breadcrumb: record.breadcrumb, href: record.href, snippet, score });
+    matches.push({ kind: record.kind || 'week', label: record.label, week: record.week, weekTitle: record.weekTitle, title: record.title, breadcrumb: record.breadcrumb, href: record.href, snippet, score });
   }
   matches.sort((a, b) => b.score - a.score || a.week.localeCompare(b.week));
   return { total: matches.length, results: matches.slice(0, 40), terms };

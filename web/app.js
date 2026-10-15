@@ -1,7 +1,7 @@
 const html = document.documentElement;
 const base = html.dataset.base;
 const week = html.dataset.week;
-const key = `cs5486:${base}:reading:v1`;
+const key = week === 'midterm' ? `cs5486:${base}:midterm-reading:v1` : `cs5486:${base}:reading:v1`;
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const get = (name, fallback) => { try { return JSON.parse(localStorage.getItem(name)) || fallback; } catch { return fallback; } };
@@ -74,14 +74,14 @@ function render(data) {
   for (const item of data.results) {
     const li = document.createElement('li'), a = document.createElement('a'), label = document.createElement('span'), title = document.createElement('strong'), snippet = document.createElement('p');
     const destination = new URL(item.href, location.origin); destination.searchParams.set('q', input.value.trim());
-    a.href = destination.href; label.className = 'site-result-label'; label.textContent = `第 ${item.week} 周 · ${item.weekTitle}`;
+    a.href = destination.href; label.className = 'site-result-label'; label.textContent = item.kind === 'topic' ? `期中复习 · ${item.title}` : `第 ${item.week} 周 · ${item.weekTitle}`;
     markText(title, item.title, data.terms); markText(snippet, item.snippet, data.terms);
     a.append(label);
     if (item.breadcrumb && item.breadcrumb !== item.title) {
       const trail = document.createElement('span'); trail.className = 'site-result-path'; trail.textContent = item.breadcrumb; a.append(trail);
     }
     a.append(title, snippet); li.append(a); results.append(li);
-    a.addEventListener('click', closeSearch);
+    a.addEventListener('click', () => { closeSearch(); if (new URL(a.href).pathname === location.pathname) setTimeout(revealHash, 0); });
   }
 }
 function runSearch() {
@@ -179,6 +179,6 @@ if (week) {
     try {
       await Promise.all($$('.textbook-body img').map(img => img.decode().catch(() => {})));
       await document.fonts.ready; window.print();
-    } finally { afterPrint(); button.disabled = false; button.textContent = '打印本周'; }
+    } finally { afterPrint(); button.disabled = false; button.textContent = week === 'midterm' ? '打印复习篇' : '打印本周'; }
   });
 }
