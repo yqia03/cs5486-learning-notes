@@ -1,6 +1,6 @@
 # 教材导入记录
 
-原始教材未修改。以下操作仅发生于网站导入副本；无知识性改写。原文件 SHA-256、正文与公式指纹详见 source/manifest.json。
+导入程序只读取当前版本的原始教材，不修改原件；以下转换仅发生于网站导入副本，不进行知识性改写。教材在导入前的增补、纠正及资料限制另见 docs/CONTENT_REVIEW.md。当前原文件 SHA-256、正文与公式指纹详见 source/manifest.json；它们用于核验本次导入保真，不表示教材自首次发布后从未更新。
 
 ## 第 01 周
 
@@ -69,4 +69,4 @@
 - Namespace references within 2 SVGs.
 - Extract 8 PNG images without recompression; retain pixel dimensions and alt text.
 
-构建时另外将本地 PDF 引用改为站内来源条目，保留引用文字、文件名及实际页码；为行内公式增加 HTML 滚动容器，以适配 WebKit，MathML 节点本身不变。教材的旧交付说明原样保留，由网站页脚说明当前资源布局。
+构建时另外将同目录教材 HTML 链接转换为对应周页面并保留锚点，将本地 PDF 引用改为站内来源条目，保留引用文字、文件名及实际页码；来源条目忽略前导相对目录段，以兼容教材移动目录前已发布的来源链接。为行内公式增加 HTML 滚动容器，以适配 WebKit，MathML 节点本身不变。教材的旧交付说明原样保留，由网站页脚说明当前资源布局。

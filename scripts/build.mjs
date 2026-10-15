@@ -1,5 +1,5 @@
 import postcss from 'postcss';
-import { root, read, json, write, sha, all, attr, set, hasClass, text, norm, article, bookHeader, headings, esc, args, basePath, parse, serializeOuter, fs, path } from './lib.mjs';
+import { root, read, json, write, sha, sourceReferenceId, all, attr, set, hasClass, text, norm, article, bookHeader, headings, esc, args, basePath, parse, serializeOuter, fs, path } from './lib.mjs';
 
 const config = await json('site.config.json');
 const base = basePath(args().base || process.env.BASE_PATH || config.base);
@@ -64,8 +64,14 @@ for (const [i, w] of manifest.weeks.entries()) {
     if (n.tagName === 'a') {
       const href = attr(n, 'href') || '';
       if (/^https?:\/\//.test(href)) { external.add(href); continue; }
+      const textbookLink = /^(?:\.\/)?([^/#]+\.html)(#.*)?$/.exec(href);
+      const targetWeek = textbookLink && manifest.weeks.find(target => target.filename === decodeURIComponent(textbookLink[1]));
+      if (targetWeek) {
+        set(n, 'href', weekHref(targetWeek) + (textbookLink[2] || ''));
+        continue;
+      }
       if (/\.pdf(?:#|$)/i.test(href)) {
-        const key = 'ref-' + sha(href).slice(0, 12);
+        const key = sourceReferenceId(href);
         if (!references.has(key)) references.set(key, { id: key, file: decodeURIComponent(href.split('#')[0]).split('/').pop(), page: /#page=(\d+)/.exec(href)?.[1] || null, occurrences: [] });
         const ref = references.get(key), occurrence = { week: w.id, anchor: currentHeading };
         if (!ref.occurrences.some(o => o.week === occurrence.week && o.anchor === occurrence.anchor)) ref.occurrences.push(occurrence);
@@ -130,14 +136,21 @@ for (const [i, w] of manifest.weeks.entries()) {
   weekOutputs.push({ id: w.id, href: weekHref(w), title: w.title, headings: headings(doc).map(n => ({ id: attr(n, 'id'), title: norm(text(n)), level: Number(n.tagName[1]) })) });
 }
 
+const totals = docs.reduce((counts, doc) => {
+  for (const node of all(article(doc))) {
+    if (node.tagName === 'h2') counts.chapters++;
+    if (node.tagName === 'details') counts.answers++;
+  }
+  return counts;
+}, { weeks: docs.length, chapters: 0, answers: 0 });
 const cards = manifest.weeks.map(w => `<li><a class="site-week-card" href="${weekHref(w)}" data-card-week="${w.id}"><div class="site-card-top"><span>第 ${w.id} 周</span><span class="site-card-arrow" aria-hidden="true">↗</span></div><h3>${esc(w.title)}</h3><p>${esc(w.subtitle)}</p><div class="site-card-bottom"><span>${w.baseline.counts.h2} 章 · ${w.baseline.counts.details} 组练习答案</span><span class="site-card-progress" data-progress-week="${w.id}">开始阅读</span></div></a></li>`).join('');
-await write('dist/index.html', shell({ title: config.title, route: '', body: `<section class="site-hero"><p class="site-eyebrow">CS5486 · INTELLIGENT SYSTEMS</p><h1>智能系统<br><span>学习手册</span></h1><p class="site-hero-description">从基础概念到完整推导，从神经网络到群体智能。<br class="site-desktop-break">按十二周的学习顺序，理解模型如何表示、学习与求解。</p><div class="site-hero-actions"><a class="site-primary" href="${weekHref(manifest.weeks[0])}">从第 01 周开始 <span aria-hidden="true">→</span></a><a id="site-continue" class="site-secondary" href="#curriculum" hidden>继续上次阅读</a></div><p class="site-personal">个人整理的学习资料 · 无需登录 · 进度保存在本机</p><div class="site-hero-stats"><div><strong>12</strong><span>周学习路径</span></div><div><strong>129</strong><span>章节循序展开</span></div><div><strong>115</strong><span>组折叠答案</span></div></div></section><section id="curriculum" class="site-curriculum"><div class="site-section-heading"><div><p class="site-eyebrow">课程目录</p><h2>循序阅读，也可按需查阅</h2></div><p>知识讲解 · 推导与图解 · 例题与练习</p></div><ol class="site-card-grid">${cards}</ol></section><section class="site-reading-note"><h2>怎样使用这本手册</h2><p>每周从必要前置开始，保留完整讲解、重要性评级与来源索引。先尝试练习，再展开答案；遇到概念时，可用全站搜索回到相关章节。</p><p>周次按概念依赖安排，并非官方授课周历。评级表示学习依赖与应用价值，不代表考试概率。引用课件的文件名与 PDF 实际页序均保留在<a href="${url('sources/')}">来源说明</a>中。</p></section>` }));
+await write('dist/index.html', shell({ title: config.title, route: '', body: `<section class="site-hero"><p class="site-eyebrow">CS5486 · INTELLIGENT SYSTEMS</p><h1>智能系统<br><span>学习手册</span></h1><p class="site-hero-description">从基础概念到完整推导，从神经网络到群体智能。<br class="site-desktop-break">按十二周的学习顺序，理解模型如何表示、学习与求解。</p><div class="site-hero-actions"><a class="site-primary" href="${weekHref(manifest.weeks[0])}">从第 01 周开始 <span aria-hidden="true">→</span></a><a id="site-continue" class="site-secondary" href="#curriculum" hidden>继续上次阅读</a></div><p class="site-personal">个人整理的学习资料 · 无需登录 · 进度保存在本机</p><div class="site-hero-stats"><div><strong data-stat="weeks">${totals.weeks}</strong><span>周学习路径</span></div><div><strong data-stat="chapters">${totals.chapters}</strong><span>章节循序展开</span></div><div><strong data-stat="answers">${totals.answers}</strong><span>组折叠答案</span></div></div></section><section id="curriculum" class="site-curriculum"><div class="site-section-heading"><div><p class="site-eyebrow">课程目录</p><h2>循序阅读，也可按需查阅</h2></div><p>知识讲解 · 推导与图解 · 例题与练习</p></div><ol class="site-card-grid">${cards}</ol></section><section class="site-reading-note"><h2>怎样使用这本手册</h2><p>每周从必要前置开始，保留完整讲解、重要性评级与来源索引。先尝试练习，再展开答案；遇到概念时，可用全站搜索回到相关章节。</p><p>周次按概念依赖安排，并非官方授课周历。评级表示学习依赖与应用价值，不代表考试概率。引用课件的文件名与 PDF 实际页序均保留在<a href="${url('sources/')}">来源说明</a>中。</p></section>` }));
 
 const grouped = new Map();
 for (const ref of references.values()) { if (!grouped.has(ref.file)) grouped.set(ref.file, []); grouped.get(ref.file).push(ref); }
 const referenceHTML = [...grouped].map(([file, refs]) => `<section class="site-reference-group"><h2>${esc(file)}</h2><ul>${refs.sort((a, b) => Number(a.page || 0) - Number(b.page || 0)).map(r => `<li id="${r.id}"><strong>${r.page ? `PDF 实际页序 ${r.page}` : '文件整体引用'}</strong><span class="site-reference-context">引用位置：${r.occurrences.map(o => `<a href="${url(`weeks/${o.week}/`)}#${esc(o.anchor)}">第 ${o.week} 周</a>`).join('、')}</span></li>`).join('')}</ul></section>`).join('');
 await write('dist/sources/index.html', shell({ title: '来源与资料说明', route: 'sources/', body: `<div class="site-document"><p class="site-eyebrow">资料溯源</p><h1>来源与资料说明</h1><p class="site-lead">教材中的引用仍可追溯到文件名和 PDF 实际页序。本站不托管原始课件、Tutorial 或论文 PDF。</p><div class="site-notice"><strong>这里是引用说明，不是 PDF 下载页。</strong><p>如已持有课程资料，请在对应文件中打开所列页码。页码从 PDF 第一页开始计数，可能与幻灯片页脚编号不同。公开论文与官方资料的外部链接保留在各周正文中。</p></div><p>所有已嵌入教材的图片均原样保留并注明原教材提供的来源。课程资料及第三方内容不适用本站代码的 MIT 许可证；详见<a href="${url('about/')}">关于与许可</a>。</p>${referenceHTML}</div>` }));
-await write('dist/about/index.html', shell({ title: '关于与许可', route: 'about/', body: `<div class="site-document"><p class="site-eyebrow">关于本站</p><h1>为理解而整理</h1><p class="site-lead">CS5486 智能系统学习手册是一份个人整理的中文学习资料，关键术语保留英文。本站不是官方课程网站。</p><h2>内容与来源</h2><p>网站由已有十二周 HTML 教材导入，保留知识讲解、推导、例题、图表、练习、答案、重要性评级和来源索引。各周顺序遵循原教材，不按主课件页码重新排列。</p><h2>许可范围</h2><p>新编写的网站程序、构建脚本及界面样式采用 MIT License。教材正文、课程截图、第三方图文、引用与原教材样式不因网站代码许可而获得 MIT 授权；其权利归原权利人所有。已知来源沿用原教材标注，未明确提供再分发许可的内容不宣称已获得该许可。本站不提供原始课件或 Tutorial PDF 下载。</p><p>详细文件范围与说明见仓库中的 LICENSE 和 THIRD_PARTY_NOTICES.md。</p><h2>阅读位置与隐私</h2><p>主题及阅读位置仅保存于当前浏览器，不上传至服务器，也不跨设备同步。清除浏览器站点数据会重置记录。本站没有账号系统或分析追踪脚本；托管服务可能记录常规访问日志。</p><h2>资料疑点与修改记录</h2><p>本次网站整合没有作知识性改写。原教材已列出的资料限制继续保留，包括第 10 周去模糊化示例缺少完整函数、第 11 周 Inversion 图示含义，以及第 12 周迭代次数与实验记录的差异。</p><p>新增疑点及经证据核实的修改记录在仓库 docs/CONTENT_REVIEW.md；导入转换及保真指纹分别记录在 docs/IMPORT_REPORT.md 与 source/manifest.json。</p><h2>更新与反馈</h2><p>教材可按周重新导入、验证和发布。发现问题时，请附周次、小节链接、问题描述与可核对依据，提交至<a href="https://github.com/${config.repository}/issues">GitHub Issues</a>。</p></div>` }));
+await write('dist/about/index.html', shell({ title: '关于与许可', route: 'about/', body: `<div class="site-document"><p class="site-eyebrow">关于本站</p><h1>为理解而整理</h1><p class="site-lead">CS5486 智能系统学习手册是一份个人整理的中文学习资料，关键术语保留英文。本站不是官方课程网站。</p><h2>内容与来源</h2><p>网站由已有十二周 HTML 教材导入，保留知识讲解、推导、例题、图表、练习、答案、重要性评级和来源索引。各周顺序遵循原教材，不按主课件页码重新排列。</p><h2>许可范围</h2><p>新编写的网站程序、构建脚本及界面样式采用 MIT License。教材正文、课程截图、第三方图文、引用与原教材样式不因网站代码许可而获得 MIT 授权；其权利归原权利人所有。已知来源沿用原教材标注，未明确提供再分发许可的内容不宣称已获得该许可。本站不提供原始课件或 Tutorial PDF 下载。</p><p>详细文件范围与说明见仓库中的 LICENSE 和 THIRD_PARTY_NOTICES.md。</p><h2>阅读位置与隐私</h2><p>主题及阅读位置仅保存于当前浏览器，不上传至服务器，也不跨设备同步。清除浏览器站点数据会重置记录。本站没有账号系统或分析追踪脚本；托管服务可能记录常规访问日志。</p><h2>资料疑点与修改记录</h2><p>教材会根据新增资料核验并按周增补；导入与构建程序仅转换呈现形式，保留当前教材的知识内容。已完成的增补与纠正、仍未解决的资料限制均保留记录。其他周原有的限制包括第 10 周去模糊化示例缺少完整函数、第 11 周 Inversion 图示含义，以及第 12 周迭代次数与实验记录的差异。</p><p>新增疑点及经证据核实的修改记录在仓库 docs/CONTENT_REVIEW.md；导入转换及保真指纹分别记录在 docs/IMPORT_REPORT.md 与 source/manifest.json。</p><h2>更新与反馈</h2><p>教材可按周重新导入、验证和发布。发现问题时，请附周次、小节链接、问题描述与可核对依据，提交至<a href="https://github.com/${config.repository}/issues">GitHub Issues</a>。</p></div>` }));
 await write('dist/404.html', shell({ title: '未找到页面', route: '404.html', body: `<div class="site-document"><p class="site-eyebrow">404</p><h1>这个页面暂时找不到</h1><p>可以返回课程目录，或搜索你正在查阅的知识点。</p><a class="site-primary" href="${base}">返回课程首页 →</a></div>` }));
 await write('dist/search-index.json', JSON.stringify(searchIndex));
 await write('dist/site-manifest.json', { base, weeks: weekOutputs, references: [...references.values()] });

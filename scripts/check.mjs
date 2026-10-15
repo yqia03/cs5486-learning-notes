@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { root, read, json, write, sha, all, attr, article, fingerprint, args, parse, fs, path } from './lib.mjs';
+import { root, read, json, write, sha, sourceReferenceId, all, attr, text, article, fingerprint, args, parse, fs, path } from './lib.mjs';
 import { prepareIndex, search } from '../web/search-core.js';
 
 const source = await json('source/manifest.json');
@@ -62,6 +62,29 @@ for (const w of source.weeks) {
     for (const h of site.weeks.find(v => v.id === w.id).headings) assert(all(built, n => attr(n, 'id') === h.id).length === 1, 'missing heading anchor');
   });
 }
+await check('Home statistics reflect current textbook content', () => {
+  const home = documents.get(path.join(root, 'dist/index.html'));
+  for (const [key, expected] of Object.entries({ weeks: source.weeks.length, chapters: totals.h2, answers: totals.details })) {
+    const nodes = all(home, n => attr(n, 'data-stat') === key);
+    assert.equal(nodes.length, 1, `missing unique home statistic ${key}`);
+    assert.equal(Number(text(nodes[0])), expected, `stale home statistic ${key}`);
+  }
+});
+await check('Source references retain their IDs after textbook directory moves', async () => {
+  for (const w of source.weeks) {
+    const doc = parse(await read(`source/weeks/${w.id}.html`));
+    for (const node of all(article(doc), n => n.tagName === 'a')) {
+      const href = attr(node, 'href') || '';
+      if (/^https?:\/\//.test(href) || !/\.pdf(?:#|$)/i.test(href)) continue;
+      const originalPath = href.replace(/^(?:\.\.?\/)+/, '');
+      const originalId = 'ref-' + sha(originalPath).slice(0, 12);
+      assert.equal(sourceReferenceId(href), originalId, 'changed legacy source reference');
+      assert.equal(sourceReferenceId('../' + originalPath), originalId, 'parent source path changes ID');
+      assert.equal(sourceReferenceId('./../' + originalPath), originalId, 'mixed source path changes ID');
+      assert(site.references.some(r => r.id === originalId), `source missing from index: ${href}`);
+    }
+  }
+});
 let links = 0;
 for (const [p, doc] of documents) {
   const relative = path.relative(path.join(root, 'dist'), p).split(path.sep).join('/');

@@ -19,6 +19,7 @@ MIT License 仅适用于新编写的网站代码（scripts/、web/）、构建�
 - CS5486-2026.pdf：课程说明。
 - Tutorial 1.pdf、Tutorial 2- M-P neuron.pdf、Perceptron_Adaline.pdf、Tutorial 7 - SVM and LS-SVM_1.pdf：课程辅助材料。
 - TLU.pdf、ASSPM-Lippmann1987.pdf、Nature1986.pdf、CS-Broomhead-Lowe1988.pdf：原教材采用的补充材料及论文。
+- 2026-10-15增量采用的SVR.pdf、SVR-tutorial.pdf（Smola / Schölkopf）、NPL-LS_SVM.pdf（Suykens / Vandewalle，1999）、LS-SVM-load.pdf（Espinoza等，2007）及Adaptive Resonance Theory.pdf：用于第05、06周核验和增补，采用范围见docs/NEW_MATERIALS.md；原PDF不收录于仓库。
 - 各周正文列出的原始论文、作者机构页面和官方软件文档：保留原外部链接，不将其内容整体镜像至本站。
 
 本仓库不包含上述原始 PDF、资料导出目录或教材生成提示词。教材中的 28 张内嵌 PNG 原样提取，无重新编码；具体文件、SHA-256、尺寸及原有替代文本见 source/manifest.json。每张图片的归属、课件页码和说明继续保留在正文邻近图注及来源段落。

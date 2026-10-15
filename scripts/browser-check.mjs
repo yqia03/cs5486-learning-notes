@@ -5,6 +5,19 @@ import { startPreview } from './preview.mjs';
 
 const options = args();
 const manifest = await json('source/manifest.json');
+const homeStats = {
+  weeks: manifest.weeks.length,
+  chapters: manifest.weeks.reduce((sum, w) => sum + w.baseline.counts.h2, 0),
+  answers: manifest.weeks.reduce((sum, w) => sum + w.baseline.counts.details, 0)
+};
+const updatedChapters = {
+  '05': ['svr-bias-bounds', 'svr-kernel-example', 'svr-reading-bridge', 'ls-classification-system', 'ls-classification-example', 'load-narx', 'load-fixed-size', 'load-mape'],
+  '06': ['art-stability', 'art-five-bit', 'art-comparison-limits']
+};
+const legacyAnchors = {
+  '05': ['svr', 'epsilon', 'svr-primal', 'svr-dual', 'kernels', 'ls-sparsity', 'spiral', 'load'],
+  '06': ['art', 'art-structure', 'art-algorithm', 'art-update', 'art-worked', 'art-vigilance']
+};
 const engine = options.engine || 'chromium';
 if (!['chromium', 'webkit'].includes(engine)) throw new Error('Use --engine chromium or webkit');
 const preview = options.url ? null : await startPreview({ port: 0 });
@@ -15,7 +28,11 @@ const output = `output/playwright/${mode}-${engine}`;
 await fs.mkdir(path.join(root, output), { recursive: true });
 const report = { engine, baseURL, scenarios: [], errors: [], consoleErrors: [], resourceFailures: [] };
 const visit = async (page, route = '') => {
-  const response = await page.goto(new URL(route, baseURL).href, { waitUntil: 'networkidle' });
+  let response = await page.goto(new URL(route, baseURL).href, { waitUntil: 'networkidle' });
+  // Hash-only navigation has no HTTP response. Reload the resulting URL so
+  // every visit still verifies a real 200 response and direct-link loading.
+  if (response === null) response = await page.reload({ waitUntil: 'networkidle' });
+  assert(response, 'expected an HTTP response after navigation or reload');
   assert.equal(response.status(), 200);
   await page.waitForFunction(() => document.querySelector('#site-theme').textContent !== '主题');
 };
@@ -38,6 +55,7 @@ try {
     await scenario(`home ${width} ${theme}`, async () => {
       await visit(page);
       assert.equal(await page.locator('.site-week-card').count(), 12);
+      for (const [name, count] of Object.entries(homeStats)) assert.equal(Number(await page.locator(`[data-stat="${name}"]`).textContent()), count, `stale ${name} count`);
       assert.equal(await page.locator('html').getAttribute('data-theme'), theme);
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'horizontal page overflow');
       await page.screenshot({ path: path.join(root, output, `home-${width}-${theme}.png`) });
@@ -71,6 +89,31 @@ try {
         const formula = page.locator('.math-display').first();
         await formula.scrollIntoViewIfNeeded();
         await page.screenshot({ path: path.join(root, output, `formula-${week.id}-${width}-${theme}.png`) });
+      }
+      for (const anchor of [...(legacyAnchors[week.id] || []), ...(updatedChapters[week.id] || [])]) assert.equal(await page.locator(`[id="${anchor}"]`).count(), 1, `missing textbook anchor ${anchor}`);
+      if (width === 390 || width === 1440) for (const anchor of updatedChapters[week.id] || []) {
+        const heading = page.locator(`[id="${anchor}"]`);
+        await heading.evaluate(e => e.scrollIntoView({ block: 'start', behavior: 'instant' }));
+        assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `updated section ${anchor} overflows`);
+        await page.screenshot({ path: path.join(root, output, `updated-${week.id}-${anchor}-${width}-${theme}.png`) });
+        // The first formula/table may lie below a long introduction. Capture
+        // each explicitly so review images show the mathematical content too.
+        const contentTargets = await heading.evaluate(e => {
+          const level = Number(e.tagName[1]), found = new Map();
+          for (let sibling = e.nextElementSibling; sibling; sibling = sibling.nextElementSibling) {
+            if (/^H[2-4]$/.test(sibling.tagName) && Number(sibling.tagName[1]) <= level) break;
+            for (const [kind, selector] of [['math', '.math-display'], ['table', '.table-wrap']]) {
+              if (found.has(kind)) continue;
+              const target = sibling.matches(selector) ? sibling : sibling.querySelector(selector);
+              if (target) found.set(kind, target.getBoundingClientRect().top + scrollY);
+            }
+          }
+          return [...found].map(([kind, top]) => ({ kind, top }));
+        });
+        for (const target of contentTargets) {
+          await page.evaluate(top => window.scrollTo({ top: Math.max(0, top - 100), behavior: 'instant' }), target.top);
+          await page.screenshot({ path: path.join(root, output, `updated-${week.id}-${anchor}-${target.kind}-${width}-${theme}.png`) });
+        }
       }
     });
     await context.close();
@@ -117,6 +160,80 @@ try {
     await page.waitForFunction(() => document.getElementById(decodeURIComponent(location.hash.slice(1)))?.open === true);
     const top = await page.evaluate(() => document.getElementById(decodeURIComponent(location.hash.slice(1))).getBoundingClientRect().top);
     assert(top >= 60 && top <= 240, `answer scroll position ${top}`);
+  });
+  await scenario('updated material is searchable with stable chapter links', async () => {
+    await visit(page);
+    for (const { query, week, anchor } of [
+      { query: 'Bias interval', week: '05', anchor: 'svr-bias-bounds' },
+      { query: 'Fixed-size', week: '05' },
+      { query: '间隔偏差', week: '05' },
+      { query: '94维', week: '05', anchor: 'load-narx' },
+      { query: 'Five-bit comparison', week: '06', anchor: 'art-five-bit' }
+    ]) {
+      await searchFor(query);
+      const results = await page.locator('#site-search-results a').evaluateAll(nodes => nodes.map(n => n.getAttribute('href')));
+      assert(results.some(href => {
+        const target = new URL(href, baseURL);
+        return target.pathname.endsWith(`/weeks/${week}/`) && (!anchor || target.hash === '#' + anchor);
+      }), `updated search missing: ${query}`);
+    }
+    await page.keyboard.press('Escape');
+  });
+  await scenario('updated and legacy deep links survive refresh', async () => {
+    for (const [week, anchor] of [['05', 'svr-dual'], ['05', 'svr-bias-bounds'], ['06', 'art-worked'], ['06', 'art-five-bit']]) {
+      await visit(page, `weeks/${week}/#${anchor}`); await page.reload({ waitUntil: 'networkidle' });
+      assert.equal(new URL(page.url()).hash, '#' + anchor);
+      const top = await page.locator(`[id="${anchor}"]`).evaluate(e => e.getBoundingClientRect().top);
+      assert(top >= 60 && top <= 240, `updated/legacy anchor ${anchor} scroll position ${top}`);
+    }
+  });
+  await scenario('new exercises open from links and remain interactive', async () => {
+    for (const [week, anchor] of [['05', 'svr-bias-check-answer'], ['06', 'art-five-bit-check']]) {
+      await visit(page, `weeks/${week}/#${anchor}`);
+      const entry = page.locator(`[id="${anchor}"]`);
+      const directAnswer = await entry.evaluate(e => e.tagName === 'DETAILS');
+      const answer = directAnswer ? entry : entry.locator('details');
+      assert.equal(await answer.count(), 1, `expected one answer for ${anchor}`);
+      const answerId = await answer.getAttribute('id');
+      assert(answerId, `answer for ${anchor} needs a stable deep link`);
+      if (!directAnswer) {
+        // A checkpoint link lands on the question; its answer remains a native
+        // disclosure. Only a link to the answer itself should auto-expand it.
+        assert(!(await answer.evaluate(e => e.open)), `question link unexpectedly opens ${answerId}`);
+        await answer.locator('summary').click(); assert(await answer.evaluate(e => e.open));
+        await answer.locator('summary').click(); assert(!(await answer.evaluate(e => e.open)));
+        await visit(page, `weeks/${week}/#${answerId}`);
+      }
+      await page.waitForFunction(id => document.getElementById(id)?.open === true, answerId);
+      await answer.locator('summary').click(); assert(!(await answer.evaluate(e => e.open)));
+      await answer.locator('summary').click(); assert(await answer.evaluate(e => e.open));
+    }
+  });
+  await scenario('new PDF citations open source descriptions and return to the course', async () => {
+    for (const [week, file] of [['05', 'SVR.pdf'], ['05', 'SVR-tutorial.pdf'], ['05', 'NPL-LS_SVM.pdf'], ['05', 'LS-SVM-load.pdf'], ['06', 'Adaptive Resonance Theory.pdf']]) {
+      await visit(page, `weeks/${week}/`);
+      const citation = page.locator(`.textbook-body a[title^="${file}"]`).first();
+      assert.equal(await citation.count(), 1, `missing source citation ${file}`);
+      const href = await citation.getAttribute('href'); assert(href.includes('/sources/#ref-'), `unconverted PDF citation ${file}`);
+      await citation.click(); await page.waitForLoadState('networkidle');
+      const id = new URL(page.url()).hash.slice(1), ref = page.locator(`[id="${id}"]`);
+      assert((await ref.textContent()).includes('PDF 实际页序'), `missing actual PDF page for ${file}`);
+      assert.equal(await ref.locator('xpath=ancestor::section').locator('h2').textContent(), file);
+      const backlink = ref.locator(`a[href*="/weeks/${week}/#"]`).first();
+      assert.equal(await backlink.count(), 1); await backlink.click(); await page.waitForLoadState('networkidle');
+      assert(page.url().includes(`/weeks/${week}/#`));
+      assert.equal(await page.locator(`[id="${decodeURIComponent(new URL(page.url()).hash.slice(1))}"]`).count(), 1);
+    }
+  });
+  await scenario('original textbook prerequisite links resolve to the website week', async () => {
+    await visit(page, 'weeks/05/');
+    const prerequisite = page.locator('.textbook-body a[href*="/weeks/04/#"]').first();
+    assert.equal(await prerequisite.count(), 1, 'missing week 04 prerequisite link');
+    await prerequisite.click(); await page.waitForLoadState('networkidle');
+    assert(page.url().includes('/weeks/04/#'));
+    const hash = new URL(page.url()).hash; await page.reload({ waitUntil: 'networkidle' });
+    assert.equal(new URL(page.url()).hash, hash);
+    assert.equal(await page.locator(`[id="${decodeURIComponent(hash.slice(1))}"]`).count(), 1);
   });
   await scenario('chapter anchors, next and previous week', async () => {
     await visit(page, 'weeks/04/');

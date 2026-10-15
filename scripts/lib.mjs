@@ -13,6 +13,10 @@ export async function write(p, value) {
   await fs.writeFile(target, typeof value === 'string' || Buffer.isBuffer(value) ? value : JSON.stringify(value, null, 2) + '\n');
 }
 export const sha = value => crypto.createHash('sha256').update(value).digest('hex');
+// Textbooks may move one directory deeper without changing source-page links.
+// Keep the original relative path spelling (including percent encoding) after
+// dropping only leading ./ or ../ segments, so existing published IDs survive.
+export const sourceReferenceId = href => 'ref-' + sha(href.replace(/^(?:\.\.?\/)+/, '')).slice(0, 12);
 export function all(node, predicate = () => true) {
   const result = [];
   function visit(n) { if (n.tagName && predicate(n)) result.push(n); for (const c of n.childNodes || []) visit(c); }

@@ -2107,29 +2107,29 @@
       "id": "05",
       "title": "软间隔、核 SVM、SVR 与 LS-SVM",
       "filename": "CS5486-Week05-学习教材.html",
-      "originalSha256": "d480b05c510a9b47a6168becf75b17138bda21576e03dda95661de54c91fa8a0",
-      "importedSha256": "6d3f102445924bdceebe57d7e49a858b42a2320557ea761fe9e384b56ae8cf75",
+      "originalSha256": "c873241c263988bb3865cf68db21f82ff23895e25b29ce18483c3df4d76f4183",
+      "importedSha256": "806c4d3a8e9e699faf3a0e1ef6121edf4161544c2e96f85aac525d5fc760af80",
       "subtitle": "CS5486 · 从基础理解监督核方法，走通推导、手算与 MATLAB 实践。",
       "baseline": {
-        "text": "37bd7c5aeecbc61ae0421dd3617f39d2bc9a4b41b523f7f8fff47cd041036ad6",
+        "text": "d271b5f0975bf9301f9342ba641098dbaebdef027b33c4b9dd90954fa450ce82",
         "header": "51ea209ab24d69b6cdc96c82f5dfb9574a14f837c4ad0bcacd86872fb82c67df",
         "counts": {
           "h2": 11,
-          "h3": 30,
-          "h4": 4,
-          "math": 96,
+          "h3": 33,
+          "h4": 17,
+          "math": 113,
           "svg": 5,
           "img": 2,
-          "table": 5,
-          "details": 8,
-          "summary": 8
+          "table": 10,
+          "details": 11,
+          "summary": 11
         },
         "blocks": {
-          "worked-example": 10,
-          "checkpoint": 8,
-          "importance": 30,
-          "rating": 30,
-          "source": 32
+          "worked-example": 14,
+          "checkpoint": 11,
+          "importance": 39,
+          "rating": 39,
+          "source": 41
         },
         "headings": [
           {
@@ -2229,6 +2229,34 @@
             "title": "5.3 SVR dual（回归对偶）：为什么系数是 α−α*"
           },
           {
+            "level": 3,
+            "title": "5.4 Bias interval（偏置区间）：把两类 KKT 分开推"
+          },
+          {
+            "level": 3,
+            "title": "5.5 Kernel SVR worked example（核 SVR 完整手算）"
+          },
+          {
+            "level": 4,
+            "title": "第一步：算核矩阵与带符号系数"
+          },
+          {
+            "level": 4,
+            "title": "第二步：从自由乘子恢复 b，检查状态"
+          },
+          {
+            "level": 4,
+            "title": "第三步：独立核对原始与对偶目标"
+          },
+          {
+            "level": 4,
+            "title": "第四步：预测没见过的输入"
+          },
+          {
+            "level": 3,
+            "title": "5.6 Loss and further reading（损失比较与选读衔接）"
+          },
+          {
             "level": 2,
             "title": "6 Least-Squares SVM（最小二乘支持向量机）：从优化到线性方程"
           },
@@ -2265,6 +2293,18 @@
             "title": "6.4 Sparsity / Classification variant（稀疏性与分类形式的区别）"
           },
           {
+            "level": 4,
+            "title": "Classification KKT system（分类 KKT 方程组）：标签究竟放在哪里？"
+          },
+          {
+            "level": 4,
+            "title": "教学示例｜两个分类样本，逐格算出标签矩阵和偏置"
+          },
+          {
+            "level": 4,
+            "title": "理解检查｜只把 γ 从1改成2"
+          },
+          {
             "level": 2,
             "title": "7 MATLAB 实践：知道每段代码在做什么"
           },
@@ -2295,6 +2335,30 @@
           {
             "level": 3,
             "title": "8.2 Short-term prediction（短期负荷预测）"
+          },
+          {
+            "level": 4,
+            "title": "NARX inputs（非线性自回归与外生输入）：94维从何而来？"
+          },
+          {
+            "level": 4,
+            "title": "Fixed-size LS-SVM（固定规模最小二乘支持向量机）为何出现？"
+          },
+          {
+            "level": 4,
+            "title": "Forecasting protocol（预测评估方案）：图像能证明到哪里？"
+          },
+          {
+            "level": 4,
+            "title": "Mean absolute percentage error（平均绝对百分比误差，MAPE）：均值与百分数要分清"
+          },
+          {
+            "level": 4,
+            "title": "理解检查｜两条几乎重合的曲线能否说明“完成复现”？"
+          },
+          {
+            "level": 4,
+            "title": "Residual diagnosis（残差诊断）：拓展阅读的入口"
           },
           {
             "level": 2,
@@ -2363,6 +2427,8 @@
           "c07624662a6cadbf7731db4ef770529a4d368de10f5856ce489e47a021d5edaa",
           "c3cbed5cf1dc5d27345847ee592aa2a5747ef94a03341dd86a133d00daacceda",
           "a383fd524722b03792a32f3034e2cc509912996e6f06e19e8570f69210ae4296",
+          "7a97842f06f089d3349a3847aa4c7bbf36a6092357cdb160a2e0be91ae356060",
+          "10d8eef5269f04bdef44fd00890b09fbdf34714dc60753da53321eb890c8d08e",
           "524f388f3895ab51eeb42ccddb9a5fcbf12dea1107a38cf3580c334d5e4e2d3f",
           "bcbab051859c36ac03860af24c348a3f9b0f7d6c74c5048e8791424607eac3b7",
           "a8a94dd923c4bf620f3cffa2f3d36126db08ab1e7665c792724d8ad9e02d4f4f",
@@ -2372,6 +2438,9 @@
           "3c73d73035d4f031f010f2680bd4c052499653713568faab90ec85e0f5eae3c1",
           "54ddbadef48b706601c7799ce2e598bfd3d053fdf63e711b19ce2f745d1a6afd",
           "b505355a413e206b85d4b8132495cedb6efafb4e52cd5133b6a6e84f0000ea4b",
+          "33be15f372300a014daba1b3cd42471e8aa47cfa80ca5fd038030e992652e4f7",
+          "319b05cab49499b4fd9ddc2d2a6746d4d8af9a37dfc681671bea36ac30b48c85",
+          "60a925b871104e27b22945a5867d5f85630c30928dde8fd2a4baec6d754702ec",
           "5af32c790e671677780bfb83d6e74886abc5adf785b5dedf85488a127973925a",
           "a2cca3b3d8dffb39b68995052827b13ebbc35a2d5a6e5d8b3a09dab919f3f5fb",
           "2729d9917b4b9b64042d659a532cccb2db43ce13b4c776ee43354bd3a261e98f",
@@ -2389,6 +2458,13 @@
           "73e6a940a4b509596cde91abadf0ff1045cb35d363767324c36011f70a567979",
           "103b62b1199e022c88dd7bf0fe8f3195fc61319c74ee34e240fef027be3157e0",
           "6abed4b3a42679c2bc7fc9db47ae444278ac2d0c991c08aabf8a9d865b42eef6",
+          "480a983092990a6dd0ec0069d7db4d6fd044c63eb345dde0811d9fe050dc1522",
+          "384ad8a22429999c2f8d827b3aae68cfc1562665a2bcd66e59d79c88191226ec",
+          "e6521c8b0bf918f82a2b3ab9e05230798ebbea7c52cba2e9bf47de0579b70ec0",
+          "35f52d2ab17908a49fbd7446fa41219d1da1d87587e6a802f7c3f5459fac2460",
+          "9235324370c96a619486ff74d907d51827663361776c2419de93aca98b24635f",
+          "3e4dc98235967229c0c1d5b10c25f41cce4d405a9b2f5f34aec2374a185b9066",
+          "353c034c7ffd7ca9b3c89a9f36afa1f59f0c225aebb57d371d7a6f4566e1838f",
           "bed6d219c8e42f600bfb8b8e27416e26ea6a526b937a137e7f3ba0b91f539a3c",
           "403ff8a203edf804fe163e66383ad3cef317ec077df2156723e559c4ed96aa32",
           "c29396161293bd528af99a240bbb98f7404c71e5fdfaa354a3ec0bd1e8b9558a",
@@ -2406,10 +2482,15 @@
           "878cbb52ef2607d912bcd4f471e4421cda418becff075cde00d92d268e0c7e51",
           "d21542ee399d3b9f37f7a9505a28edd9b8923df8fb198fa1198cf66cf5e76f79",
           "45bfb3df6c6a57fd78c04e6a15e313cb3d5313b73d80a494b2b0421c80c1f164",
-          "7e1f89ae8d0bea42e23f971e3c7a71d0850581beaf9b182ed153928d19e28f93",
-          "a2e0277ef41678eec9e5208ae81e7b97391ead1b3056692e64b1d36606b09531",
+          "587a0f501698b4db1f491f277d90aa3ea8b2f99b24cb67fef475fb4b73ed9cad",
+          "885477d41dc8d3d2bfc2a2d42c61286058086dfd493ed44e1d0138210b4baa8d",
+          "42b35159edf32cbb6ee8357a9b4a7fd502b6a188a8316195406679f7f2cacc23",
+          "5df1cad3ea28ce80bfc11c9e74a105fe7dff1e7050022e0aa7406ed095890f6b",
+          "cd3be9584bf74eff98a5e2bd655bb94d3e399524bb5c2465972359e31c1949b0",
           "bf8cabcd178945606cfbf03349e3be4350c44617092330725af245913c8d2b7d",
-          "07fba366e4fefe0e048b6c10bba1655d6dbeb92288bc6e1cb4e07fd510fcaa24"
+          "07fba366e4fefe0e048b6c10bba1655d6dbeb92288bc6e1cb4e07fd510fcaa24",
+          "597bca10a6772417e3e44944cfbe508c346689cac8e4f1da13ff9cf727fbe43f",
+          "d3232623693ad076e57e54c81456914697d35acd6575be4bc60e04e90dad024e"
         ],
         "svg": [
           "9fe54729621b7b368667465ad670ee22f489ab1a3e8993b170944044fb5c5955",
@@ -2426,7 +2507,7 @@
           "bytes": 334814,
           "width": 1097,
           "height": 860,
-          "alt": "原资料图：Lecture_slides_full semester.pdf，实际第162页绘图区。保留原始符号和坐标；本页没有图例明确全部符号的实验角色。"
+          "alt": "原资料图：Lecture_slides_full semester.pdf，实际第162页绘图区；已与 NPL-LS_SVM.pdf 实际第7页 Figure 2 核对相符。圆圈与星形表示两类训练点，保留原始符号和坐标。"
         },
         {
           "file": "b8e0be90eb8488e4ff755b8b72218c353a0f1292f1d751e93c66a8973f583c6c.png",
@@ -2434,7 +2515,7 @@
           "bytes": 282443,
           "width": 1175,
           "height": 865,
-          "alt": "原资料图：Lecture_slides_full semester.pdf，实际第163页四个面板。蓝色虚线 Actual Load，左列红线 FS-LSSVM，右列红线 Linear；在窄屏可横向滚动查看图例。"
+          "alt": "原资料图：Lecture_slides_full semester.pdf，实际第163页，与 LS-SVM-load.pdf 实际第8页 Figure 8 相符。蓝色虚线 Actual Load；左列红线 FS-LSSVM、右列红线 Linear。上排为1小时超前预测，下排为24小时递推仿真，均展示测试期前7天；窄屏可横向滚动。"
         }
       ],
       "transformations": [
@@ -2447,29 +2528,29 @@
       "id": "06",
       "title": "竞争学习、ART 与自组织映射",
       "filename": "CS5486-Week06-学习教材.html",
-      "originalSha256": "e479a83dc6d575d03fa22cf79df1da1bac211c45cac5d9ce44a65a9e8daed8eb",
-      "importedSha256": "11ee7e392e128c0d5e181ff88f218e7f6111acac05f2767f740ee06ba031acc9",
+      "originalSha256": "266b072778ae5cb8860cea8b10a35ad2c7dcfdc5740105eff0a1e109c5563460",
+      "importedSha256": "f12a7ef1810f9c4d46da664d2d466349d9aa5e2443dfe7fcdac904dbb0e5dfc5",
       "subtitle": "CS5486 · 从最大值竞争，到增量类别学习，再到固定地图上的邻域协同。",
       "baseline": {
-        "text": "de0950076a2b0bafb94ad569a1551d7aa3d27feba85093dcd3eca703bcc97b83",
+        "text": "979744368a8f844fdd145e47297141fabb9d566c60730883d296738b544f7f13",
         "header": "765c029fa3580c5bb8f0f6c9e69c3982827a830bc45fadf00fd2426f4c6034de",
         "counts": {
           "h2": 9,
-          "h3": 22,
-          "h4": 12,
-          "math": 86,
+          "h3": 23,
+          "h4": 14,
+          "math": 87,
           "svg": 5,
           "img": 6,
-          "table": 9,
-          "details": 10,
-          "summary": 10
+          "table": 11,
+          "details": 11,
+          "summary": 11
         },
         "blocks": {
-          "worked-example": 8,
-          "checkpoint": 10,
-          "importance": 23,
-          "rating": 23,
-          "source": 25
+          "worked-example": 10,
+          "checkpoint": 11,
+          "importance": 26,
+          "rating": 26,
+          "source": 28
         },
         "headings": [
           {
@@ -2537,6 +2618,10 @@
             "title": "4.1 ART1 的双向结构与增量聚类问题"
           },
           {
+            "level": 4,
+            "title": "Stability–plasticity dilemma（稳定性—可塑性困境）：保护学习边界，不冻结所有记忆"
+          },
+          {
             "level": 3,
             "title": "4.2 Choice、Vigilance、Reset：把五步算法拆开"
           },
@@ -2567,6 +2652,14 @@
           {
             "level": 3,
             "title": "4.5 Vigilance（警戒性）、输入顺序与 C/E/F 原例"
+          },
+          {
+            "level": 3,
+            "title": "4.6 Five-bit comparison（五位输入对照）：两种警戒值，完整候选竞争"
+          },
+          {
+            "level": 4,
+            "title": "Online learning（在线学习）的比较边界"
           },
           {
             "level": 2,
@@ -2714,6 +2807,7 @@
           "481b1b572e671debf9604d02a15caa2d96866463d4dec5e7d82e1003e2e0f96d",
           "381dd5c010f1ec8259fe637ff084a31d71d30213598c0d93a0cfdc07a70a6c7c",
           "9765ec73e9236ade98b6452834c7bf4283a71f03f33c45fb370f6dcfd17645dc",
+          "13f1260d2cf1a256501b2805ca77a1d4de2570a6b3510963f851eea61f00af40",
           "2df0b4d671cdbb1908e90665aff48a0cd6618814852226a58a5293e79495362e",
           "317dff0c9e11c384d81009435b6389aa0caefd7da19d84d06cc84b235d6114cc",
           "ba52e5c0131d3d62483dc8ecf5c96d2d877c43a998df134a4292552049c0b7e1",

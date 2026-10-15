@@ -1,7 +1,7 @@
 import { root, read, json, write, sha, all, attr, set, text, norm, article, headings, fingerprint, topics, args, parse, serialize, fs, path } from './lib.mjs';
 
 const options = args();
-const source = path.resolve(root, options.source || '..');
+const source = path.resolve(root, options.source || '../学习笔记');
 const selected = options.week === undefined ? Array.from({ length: 12 }, (_, i) => i + 1) : [Number(options.week)];
 if (selected.some(n => !Number.isInteger(n) || n < 1 || n > 12)) throw new Error('--week must be 01–12');
 let manifest = { version: 1, weeks: [] };
@@ -90,4 +90,4 @@ const used = new Set(manifest.weeks.flatMap(w => w.images.map(i => i.file)));
 for (const file of await fs.readdir(path.join(root, 'source/assets')).catch(() => [])) {
   if (/^[a-f0-9]{64}\.png$/.test(file) && !used.has(file)) await fs.unlink(path.join(root, 'source/assets', file));
 }
-await write('docs/IMPORT_REPORT.md', '# 教材导入记录\n\n原始教材未修改。以下操作仅发生于网站导入副本；无知识性改写。原文件 SHA-256、正文与公式指纹详见 source/manifest.json。\n\n' + manifest.weeks.map(w => `## 第 ${w.id} 周\n\n${w.transformations.map(t => '- ' + t).join('\n')}\n`).join('\n') + '\n构建时另外将本地 PDF 引用改为站内来源条目，保留引用文字、文件名及实际页码；为行内公式增加 HTML 滚动容器，以适配 WebKit，MathML 节点本身不变。教材的旧交付说明原样保留，由网站页脚说明当前资源布局。\n');
+await write('docs/IMPORT_REPORT.md', '# 教材导入记录\n\n导入程序只读取当前版本的原始教材，不修改原件；以下转换仅发生于网站导入副本，不进行知识性改写。教材在导入前的增补、纠正及资料限制另见 docs/CONTENT_REVIEW.md。当前原文件 SHA-256、正文与公式指纹详见 source/manifest.json；它们用于核验本次导入保真，不表示教材自首次发布后从未更新。\n\n' + manifest.weeks.map(w => `## 第 ${w.id} 周\n\n${w.transformations.map(t => '- ' + t).join('\n')}\n`).join('\n') + '\n构建时另外将同目录教材 HTML 链接转换为对应周页面并保留锚点，将本地 PDF 引用改为站内来源条目，保留引用文字、文件名及实际页码；来源条目忽略前导相对目录段，以兼容教材移动目录前已发布的来源链接。为行内公式增加 HTML 滚动容器，以适配 WebKit，MathML 节点本身不变。教材的旧交付说明原样保留，由网站页脚说明当前资源布局。\n');
